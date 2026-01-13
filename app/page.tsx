@@ -1,6 +1,6 @@
 'use client';
 
-import { HeroSection, AboutSection, SkillsSection, GallerySection, ProjectsSection, ResumeSection, CertificatesSection, ContactSection } from '@/src/components/sections';
+import { HeroSection, AboutSection, SkillsSection, GallerySection, ProjectsSection, ResumeSection, CertificatesSection, HobbiesSection, ContactSection } from '@/src/components/sections';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -20,6 +20,8 @@ export default function Home() {
       <ResumeSection />
 
       <CertificatesSection />
+
+      <HobbiesSection />
 
       <ContactSection />
 

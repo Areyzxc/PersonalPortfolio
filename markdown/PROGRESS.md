@@ -1,13 +1,29 @@
 # Personal Portfolio - Progress Report
-**Last Updated:** January 10, 2026
+**Last Updated:** January 13, 2026
 
 ---
 
-## 🎯 Project Status: 95% Complete ⬆️⬆️ (was 85%, then 90%)
+## 🎯 Project Status: 96% Complete ⬆️ (was 95%)
 
-### ✅ Completed Today (Day 4, Session 1) - Projects Showcase Phase 1
+### ✅ Completed Today (Day 4, Session 2) - Phase 3.1: Projects Grid Enhancement
 
-#### 🎉 **PROJECTS SHOWCASE SUCCESSFULLY LAUNCHED!**
+**Phase 3.1 Complete:**
+- ✅ Fixed Projects Grid layout: Changed from `lg:grid-cols-3` to `lg:grid-cols-2` for proper 2-column desktop layout
+- ✅ Added static glow effect to featured projects: `shadow-lg shadow-yellow-500/30` (with theme variants)
+- ✅ Removed unnecessary `col-span` classes from motion.div wrapper (cleaner markup)
+- ✅ Build verification: 0 errors, 0 warnings
+- ✅ Git commit: `9052b016` - "Phase 3.1: Fix Projects Grid layout (2 columns desktop) and add static glow to featured projects"
+
+**What Changed:**
+- **ProjectsSection.tsx**: Grid changed from `grid-cols-1 md:grid-cols-2 lg:grid-cols-3` → `grid-cols-1 md:grid-cols-2 lg:grid-cols-2`
+- **ProjectCard.tsx**: Added conditional glow styling: Featured projects now display with persistent shadow glow (yellow in Dark mode, softer yellow in Light mode, emerald in Terminal mode)
+- **Result**: Desktop now shows 2-column layout with featured projects displaying with static glow effect (not pulsing, as requested)
+
+---
+
+### ✅ Previous Session (Day 4, Session 1) - Phase 2: Resume & CV Enhancements + Gallery Fix + Git Setup
+
+#### 🎉 **RESUME/CV AND GALLERY FIXES COMPLETE + GITHUB CONNECTED!**
 
 **Completion Summary:**
 - ✨ Full Phase 1 implementation of Projects Showcase

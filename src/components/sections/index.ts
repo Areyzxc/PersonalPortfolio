@@ -8,4 +8,5 @@ export { ProjectFilter } from './ProjectFilter';
 export { ProjectGrid } from './ProjectGrid';
 export { ResumeSection } from './ResumeSection';
 export { CertificatesSection } from './CertificatesSection';
+export { HobbiesSection } from './HobbiesSection';
 export { ContactSection } from './ContactSection';
