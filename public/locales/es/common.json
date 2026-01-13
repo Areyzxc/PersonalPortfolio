@@ -1,0 +1,13 @@
+{
+  "title": "Portafolio Personal",
+  "description": "Desarrollador full-stack y pensador creativo",
+  "language": "Español",
+  "darkMode": "Modo Oscuro",
+  "lightMode": "Modo Claro",
+  "terminal": "Tema Terminal",
+  "loading": "Cargando...",
+  "error": "Algo salió mal",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "previous": "Anterior"
+}

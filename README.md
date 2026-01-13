@@ -1,20 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Personal Portfolio
 
-## Getting Started
+A modern, fully-featured personal portfolio website built with **Next.js 14**, **React 19**, **TypeScript**, **Tailwind CSS**, and **Framer Motion**.
 
-First, run the development server:
+## ✨ Features
+
+- 🎨 **Modern UI/UX** - Beautiful gradient designs and smooth animations
+- 🌙 **Multi-Theme Support** - Light, Dark, and Terminal (retro) themes
+- 🌍 **Multi-Language** - English, Spanish, and French translations (i18n)
+- 🎬 **Smooth Animations** - Framer Motion for elegant page transitions
+- 💬 **Comments System** - Giscus integration for project discussions
+- 🎵 **Spotify Integration** - Display currently playing track
+- 📱 **Fully Responsive** - Mobile-first design
+- ⚡ **Fast Performance** - Next.js static export
+
+## 🚀 Quick Start
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view your portfolio.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
