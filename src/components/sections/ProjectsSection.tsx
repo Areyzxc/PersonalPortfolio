@@ -87,7 +87,7 @@ export const ProjectsSection: React.FC = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '0px 0px -100px 0px' }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 auto-rows-max"
           >
             <AnimatePresence mode="wait">
               {filteredProjects.length > 0 ? (
@@ -98,7 +98,6 @@ export const ProjectsSection: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.3 }}
-                    className={project.featured ? 'md:col-span-2 lg:col-span-2' : ''}
                   >
                     <ProjectCard
                       project={project}

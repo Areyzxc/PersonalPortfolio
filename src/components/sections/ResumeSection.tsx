@@ -38,8 +38,9 @@
 
     const handleDownload = () => {
         const link = document.createElement('a');
-        link.href = resumeData.pdfUrl;
-        link.download = 'James_Aries_Santiago_Resume.pdf';
+        const isResume = activeTab === 'resume';
+        link.href = isResume ? resumeData.resumePdfUrl : resumeData.cvPdfUrl;
+        link.download = isResume ? 'James_Aries_Santiago_Resume.pdf' : 'James_Aries_Santiago_CV.pdf';
         link.click();
     };
 
@@ -240,7 +241,7 @@
         initial="hidden"
         animate="visible"
         exit="hidden"
-        className="mb-12"
+        className="mb-12 mt-16 pt-12 border-t border-secondary/30 light-mode:border-gray-200 terminal-mode:border-emerald-600/30"
         >
         <motion.h3
             variants={itemVariants}
@@ -442,7 +443,7 @@
                 className="flex items-center gap-2 px-6 py-3 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all light-mode:bg-blue-600 light-mode:hover:bg-blue-700 terminal-mode:bg-emerald-600 terminal-mode:hover:bg-emerald-500"
             >
                 <Download size={20} />
-                Download PDF
+                {activeTab === 'resume' ? 'Download Resume' : 'Download CV'}
             </motion.button>
             <motion.button
                 whileHover={{ scale: 1.05 }}

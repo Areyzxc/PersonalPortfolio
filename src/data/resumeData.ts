@@ -45,7 +45,8 @@ export interface Resume {
   certifications: Certification[];
   languages: Language[];
   awards: Award[];
-  pdfUrl: string;
+  resumePdfUrl: string; // UPDATE HERE: Path to Resume PDF
+  cvPdfUrl: string; // UPDATE HERE: Path to CV PDF
 }
 
 export const resumeData: Resume = {
@@ -207,5 +208,6 @@ export const resumeData: Resume = {
     },
   ],
 
-  pdfUrl: '/files/James_Aries_Santiago_Resume.pdf', // Add your PDF file here
+  resumePdfUrl: '/files/James_Aries_Santiago_Resume.pdf', // UPDATE HERE: Add your Resume PDF file path
+  cvPdfUrl: '/files/James_Aries_Santiago_CV.pdf', // UPDATE HERE: Add your CV PDF file path
 };

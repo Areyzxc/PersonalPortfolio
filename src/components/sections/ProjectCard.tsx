@@ -58,7 +58,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className={featured ? 'md:col-span-2 lg:col-span-2' : ''}
     >
       <motion.div
         variants={hoverVariants}
@@ -75,6 +74,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             flex flex-col
             light-mode:bg-white light-mode:border-gray-200 light-mode:hover:border-blue-400
             terminal-mode:bg-emerald-950/30 terminal-mode:border-emerald-600/50 terminal-mode:hover:border-emerald-500
+            ${featured ? 'shadow-lg shadow-yellow-500/30 light-mode:shadow-yellow-300/40 terminal-mode:shadow-emerald-500/40' : ''}
           `}
         >
           {/* Status Badge */}
