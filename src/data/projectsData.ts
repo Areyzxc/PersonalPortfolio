@@ -15,6 +15,7 @@ export interface Project {
   status: 'completed' | 'in-progress' | 'archived';
   demoUrl?: string;
   githubUrl: string;
+  githubRepo?: string; // GitHub repo in format: owner/repo
   youtubeUrl?: string;
   caseStudy: {
     challenge: string;
@@ -37,6 +38,7 @@ export const projectsData: Project[] = [
     status: 'completed',
     demoUrl: 'https://mangabrew-cafe.vercel.app',
     githubUrl: 'https://github.com/Areyzxc/MangaBrew-Cafe',
+    githubRepo: 'Areyzxc/MangaBrew-Cafe',
     youtubeUrl: 'https://youtube.com', // TODO: Add actual YouTube demo link
     caseStudy: {
       challenge:
@@ -62,6 +64,7 @@ export const projectsData: Project[] = [
     status: 'completed',
     demoUrl: 'https://tech-blog-platform.vercel.app',
     githubUrl: 'https://github.com/Areyzxc/Blog',
+    githubRepo: 'Areyzxc/Blog',
     youtubeUrl: 'https://youtube.com', // TODO: Add actual YouTube demo link
     caseStudy: {
       challenge:
@@ -87,6 +90,7 @@ export const projectsData: Project[] = [
     status: 'completed',
     demoUrl: 'https://codegaming.gamer.gd', // Link to releases
     githubUrl: 'https://github.com/Areyzxc/CG-Game-Development',
+    githubRepo: 'Areyzxc/CG-Game-Development',
     youtubeUrl: 'https://youtube.com', // TODO: Add actual YouTube gameplay video link
     caseStudy: {
       challenge:
@@ -112,6 +116,7 @@ export const projectsData: Project[] = [
     status: 'completed',
     demoUrl: 'https://github.com/Areyzxc/SystemInfoGenerator/releases',
     githubUrl: 'https://github.com/Areyzxc/SystemInfoGenerator',
+    githubRepo: 'Areyzxc/SystemInfoGenerator',
     youtubeUrl: 'https://youtube.com', // TODO: Add actual YouTube demo link
     caseStudy: {
       challenge:

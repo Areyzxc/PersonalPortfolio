@@ -6,6 +6,8 @@ import { X } from 'lucide-react';
 import { projectsData, getUniqueTechnologies, getUniqueCategories, getUniqueYears, Project } from '../../data/projectsData';
 import { ProjectCard } from './ProjectCard';
 import { ProjectFilter } from './ProjectFilter';
+import { GitHubStats } from './GitHubStats';
+import { GiscusComments } from './GiscusComments';
 import { applyFilters, sortProjects } from '../../lib/utils/projectHelpers';
 
 export const ProjectsSection: React.FC = () => {
@@ -236,6 +238,15 @@ export const ProjectsSection: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* GitHub Stats */}
+                  {expandedProject.githubRepo && (
+                    <div className="mb-8 pb-8 border-b border-accent/20 light-mode:border-gray-200 terminal-mode:border-emerald-600/30">
+                      <h3 className="text-xl font-semibold mb-4 light-mode:text-gray-900 terminal-mode:text-emerald-300">
+                        📊 Repository Stats
+                      </h3>
+                      <GitHubStats repoPath={expandedProject.githubRepo} className="flex-wrap" />
+                    </div>
+                  )}
                   {/* Action Buttons */}
                   <div className="flex flex-col md:flex-row gap-4">
                     {expandedProject.demoUrl && (
@@ -273,6 +284,16 @@ export const ProjectsSection: React.FC = () => {
                       </motion.a>
                     )}
                   </div>
+
+                  {/* Giscus Comments */}
+                  {expandedProject.githubRepo && (
+                    <div className="mt-12 pt-8 border-t border-accent/20 light-mode:border-gray-200 terminal-mode:border-emerald-600/30">
+                      <h3 className="text-xl font-semibold mb-6 light-mode:text-gray-900 terminal-mode:text-emerald-300">
+                        💬 Discussions & Comments
+                      </h3>
+                      <GiscusComments repoPath={expandedProject.githubRepo} />
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -282,3 +303,4 @@ export const ProjectsSection: React.FC = () => {
     </>
   );
 };
+
