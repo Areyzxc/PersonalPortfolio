@@ -9,4 +9,5 @@ export { ProjectGrid } from './ProjectGrid';
 export { ResumeSection } from './ResumeSection';
 export { CertificatesSection } from './CertificatesSection';
 export { HobbiesSection } from './HobbiesSection';
+export { GamesSection } from './GamesSection';
 export { ContactSection } from './ContactSection';

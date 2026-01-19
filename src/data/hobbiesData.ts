@@ -72,6 +72,8 @@ export const hobbiesData: Hobby[] = [
   },
 ];
 
+// Additional hobbies can be added here following the same structure\
+
 // Helper functions
 export const getHobbiesByCategory = (category: Hobby['category']): Hobby[] => {
   return hobbiesData.filter((hobby) => hobby.category === category);
