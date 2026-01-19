@@ -57,7 +57,7 @@ export const HobbiesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-light light-mode:from-blue-600 light-mode:to-blue-400 terminal-mode:from-emerald-300 terminal-mode:to-emerald-400">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
             My Hobbies & Interests
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
