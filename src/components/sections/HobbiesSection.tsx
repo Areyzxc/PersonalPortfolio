@@ -192,18 +192,19 @@ export const HobbiesSection = () => {
                         >
                           <ul className="space-y-2">
                             {hobby.details.map((detail, i) => (
-                              <motion.li
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.05 }}
-                                className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-600 terminal-mode:text-emerald-200"
-                              >
-                                <span className="text-accent mt-1 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400">
-                                  ✓
-                                </span>
-                                <span>{detail}</span>
-                              </motion.li>
+                              <li key={i}>
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-600 terminal-mode:text-emerald-200"
+                                >
+                                  <span className="text-accent mt-1 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400">
+                                    ✓
+                                  </span>
+                                  <span>{detail}</span>
+                                </motion.div>
+                              </li>
                             ))}
                           </ul>
                         </motion.div>

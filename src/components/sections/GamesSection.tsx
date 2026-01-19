@@ -250,18 +250,19 @@ export const GamesSection = () => {
                                 </h4>
                                 <ul className="space-y-2">
                                   {game.gameplayTips.map((tip, i) => (
-                                    <motion.li
-                                      key={i}
-                                      initial={{ opacity: 0, x: -10 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{ delay: i * 0.05 }}
-                                      className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
-                                    >
-                                      <span className="text-accent mt-0.5 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400">
-                                        ✓
-                                      </span>
-                                      <span>{tip}</span>
-                                    </motion.li>
+                                    <li key={i}>
+                                      <motion.div
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
+                                      >
+                                        <span className="text-accent mt-0.5 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400">
+                                          ✓
+                                        </span>
+                                        <span>{tip}</span>
+                                      </motion.div>
+                                    </li>
                                   ))}
                                 </ul>
                               </div>
@@ -275,18 +276,19 @@ export const GamesSection = () => {
                                 </h4>
                                 <ul className="space-y-2">
                                   {game.achievementsUnlocked.map((achievement, i) => (
-                                    <motion.li
-                                      key={i}
-                                      initial={{ opacity: 0, x: -10 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{ delay: i * 0.05 }}
-                                      className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
-                                    >
-                                      <span className="text-yellow-400 mt-0.5 flex-shrink-0">
-                                        ⭐
-                                      </span>
-                                      <span>{achievement}</span>
-                                    </motion.li>
+                                    <li key={i}>
+                                      <motion.div
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
+                                      >
+                                        <span className="text-yellow-400 mt-0.5 flex-shrink-0">
+                                          ⭐
+                                        </span>
+                                        <span>{achievement}</span>
+                                      </motion.div>
+                                    </li>
                                   ))}
                                 </ul>
                               </div>
@@ -300,18 +302,19 @@ export const GamesSection = () => {
                                 </h4>
                                 <ul className="space-y-2">
                                   {game.favoritesMoments.map((moment, i) => (
-                                    <motion.li
-                                      key={i}
-                                      initial={{ opacity: 0, x: -10 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{ delay: i * 0.05 }}
-                                      className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
-                                    >
-                                      <span className="text-pink-400 mt-0.5 flex-shrink-0">
-                                        💫
-                                      </span>
-                                      <span>{moment}</span>
-                                    </motion.li>
+                                    <li key={i}>
+                                      <motion.div
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className="flex items-start gap-2 text-sm text-gray-400 light-mode:text-gray-700 terminal-mode:text-emerald-200"
+                                      >
+                                        <span className="text-pink-400 mt-0.5 flex-shrink-0">
+                                          💫
+                                        </span>
+                                        <span>{moment}</span>
+                                      </motion.div>
+                                    </li>
                                   ))}
                                 </ul>
                               </div>
