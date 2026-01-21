@@ -1,26 +1,27 @@
-    'use client';
+'use client';
 
-    import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
-    interface TimelineItem {
-    year: string;
-    title: string;
-    description: string;
-    }
+interface TimelineItem {
+  year: string;
+  title: string;
+  description: string;
+}
 
-    interface AboutSectionProps {
-    profileImage?: string;
-    name?: string;
-    title?: string;
-    bio?: string[];
-    highlights?: string[];
-    timeline?: TimelineItem[];
-    }
+interface AboutSectionProps {
+  profileImages?: string[];
+  name?: string;
+  title?: string;
+  bio?: string[];
+  highlights?: string[];
+  timeline?: TimelineItem[];
+}
 
-    export const AboutSection: React.FC<AboutSectionProps> = ({
-    profileImage='/images/profile/profile.JPG',
+export const AboutSection: React.FC<AboutSectionProps> = ({
+  profileImages = ['/images/profile/profile.JPG'],
     name = 'James Aries Gravamen Santiago',
-    title = 'Full-Stack Developer | Creative Coder | Open Source Enthusiast',
+    title = 'Full-Stack Developer | Creative Coder | Design Planner',
     bio = [
         'I\'m passionate about building web applications that are not just functional but also beautiful and user-friendly. With a strong foundation in both frontend and backend technologies, I love tackling challenging problems and creating innovative solutions.',
         'When I\'m not coding, you can find me contributing to open-source projects, learning new technologies, or sharing knowledge with the community. I believe in continuous learning and pushing the boundaries of what\'s possible on the web.',
@@ -28,28 +29,30 @@
     highlights = [
         'Full-Stack Web Development',
         'React & Next.js Expertise',
+        'Project Management & Documentation Skills',
         'HTML, CSS, JavaScript Proficiency',
         'UI/UX Design Principles',
         'Open Source Contributor',
     ],
     timeline = [
         {
-        year: '2024',
-        title: 'Senior Developer',
-        description: 'Led multiple high-impact projects and mentored junior developers.',
-        },
-        {
-        year: '2023',
-        title: 'Mid-Level Developer',
-        description: 'Specialized in full-stack development and system architecture.',
-        },
-        {
-        year: '2022',
+        year: '2023-Present',
         title: 'Junior Developer',
-        description: 'Started journey in web development with a focus on frontend.',
+        description: 'Started journey in web development with a focus on frontend and backend technologies.',
         },
     ],
     }) => {
+    // Image carousel state
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    // Auto-rotate images every 4 seconds
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % profileImages.length);
+      }, 4000);
+
+      return () => clearInterval(interval);
+    }, [profileImages.length]);
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -102,7 +105,7 @@
             viewport={{ once: true }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20"
             >
-            {/* Profile Image */}
+            {/* Profile Image Carousel */}
             <motion.div variants={imageVariants} className="flex justify-center">
                 <div className="relative w-80 h-80 md:w-96 md:h-96">
                 {/* Animated Border */}
@@ -118,14 +121,45 @@
                     className="absolute inset-0 rounded-2xl bg-gradient-to-br from-accent to-accent-light p-1"
                 >
                     <div className="w-full h-full rounded-2xl bg-secondary overflow-hidden flex items-center justify-center">
-                    {/* Profile Image */}
-                    <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover rounded-2xl"
-                    />
+                    {/* Image Carousel - Fade between images */}
+                    {profileImages.map((image, index) => (
+                        <motion.img
+                        key={index}
+                        src={image}
+                        alt={`Profile ${index + 1}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: currentImageIndex === index ? 1 : 0 }}
+                        transition={{ duration: 1 }}
+                        className="absolute w-full h-full object-cover rounded-2xl"
+                        />
+                    ))}
                     </div>
                 </motion.div>
+
+                {/* Image Carousel Indicators (dots) */}
+                {profileImages.length > 1 && (
+                    <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2"
+                    >
+                    {profileImages.map((_, index) => (
+                        <motion.button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                            currentImageIndex === index
+                            ? 'bg-accent'
+                            : 'bg-gray-500 hover:bg-gray-400'
+                        }`}
+                        aria-label={`View profile image ${index + 1}`}
+                        />
+                    ))}
+                    </motion.div>
+                )}
                 </div>
             </motion.div>
 

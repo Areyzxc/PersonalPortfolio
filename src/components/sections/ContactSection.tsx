@@ -22,10 +22,10 @@
     export const ContactSection: React.FC<ContactSectionProps> = ({
     contactInfo = {
         email: 'jamesariess76@gmail.com',
-        phone: '(PH) 09605876574',
+        phone: '(PH) +63 960 587-6574',
         location: 'Lozada St. Brgy. Sto. Rosario - Kanluran, Pateros (1620), Metro Manila, Philippines',
         github: 'https://github.com/Areyzxc',
-        linkedin: 'https://www.linkedin.com/in/james-aries-g-santiago-9669042b8/',
+        linkedin: 'https://www.linkedin.com/in/james-aries-santiago/',
         twitter: 'https://x.com/JamesAries47855',
         facebook: 'https://www.facebook.com/Areyszxc',
         threads: 'https://www.threads.com/@areys27_tiago.san',

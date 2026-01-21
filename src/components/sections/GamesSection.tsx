@@ -59,7 +59,7 @@ export const GamesSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
-            🎮 Games I'm Playing
+            Games I'm Playing
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
             My gaming journey and favorite titles

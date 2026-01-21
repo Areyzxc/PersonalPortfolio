@@ -12,6 +12,7 @@ export interface GalleryImage {
 }
 
 export const galleryImages: GalleryImage[] = [
+
   // Travel Category: Add your travel images here
   {
     id: '1',
@@ -24,52 +25,70 @@ export const galleryImages: GalleryImage[] = [
   },
   {
     id: '2',
-    src: '/images/gallery/travel-2.jpg',
-    alt: 'Beach Sunset',
-    title: 'Sunset at the Beach',
-    description: 'Beautiful sunset moment captured at the local beach.',
+    src: '/images/gallery/Travel2.jpg',
+    alt: 'Baguio City View',
+    title: 'High Above Baguio',
+    description: 'Beautiful breeze from the pine trees in Baguio City.',
     category: 'Travel',
-    date: '2024-05-20',
+    date: '2024-12-29',
+  },
+  {
+    id: '7',
+    src: '/images/gallery/Cathedral.jpg',
+    alt: 'Cathedral',
+    title: 'Cathedral Visit',
+    description: 'Exploring the historic cathedral with its stunning architecture from Baguio.',
+    category: 'Travel',
+    date: '2024-12-29',
   },
 
   // Events Category: Add your event images here
   {
     id: '3',
-    src: '/images/gallery/events-1.jpg',
-    alt: 'Tech Conference',
-    title: 'Tech Conference 2024',
-    description: 'Speaking at the annual tech conference.',
+    src: '/images/gallery/Capstone.jpg',
+    alt: 'Capstone Book Submission',
+    title: 'Capstone Book Submission',
+    description: 'Me and my proponents during our Capstone Project Book Submission event.',
     category: 'Events',
-    date: '2024-04-10',
+    date: '2026-01-12',
   },
   {
     id: '4',
-    src: '/images/gallery/events-2.jpg',
-    alt: 'Hackathon',
-    title: 'Hackathon Victory',
-    description: 'Won first place at the 48-hour hackathon event.',
+    src: '/images/gallery/Capstone1.jpg',
+    alt: 'Capstone System Checking',
+    title: 'Capstone System Checking',
+    description: 'Checking the system during our Capstone Project event.',
     category: 'Events',
-    date: '2024-03-05',
+    date: '2025-10-10',
+  },
+  {
+    id: '8',
+    src: '/images/gallery/Certification.jpg',
+    alt: 'Certification Event',
+    title: 'Certification Event Gathering',
+    description: 'Attending a certification event with my fellow classmates.',
+    category: 'Events',
+    date: '2023-08-29',
   },
 
   // Personal Category: Add your personal images here
   {
     id: '5',
-    src: '/images/gallery/personal-1.jpg',
-    alt: 'Coding Session',
-    title: 'Late Night Coding',
-    description: 'Working on an exciting new project late into the night.',
+    src: '/images/gallery/Personal-1.jpg',
+    alt: 'At the Market',
+    title: 'At the Market',
+    description: 'After the food event at our school, I visited the local market to eat with friends.',
     category: 'Personal',
-    date: '2024-02-28',
+    date: '2023-04-27',
   },
   {
     id: '6',
-    src: '/images/gallery/personal-2.jpg',
-    alt: 'Coffee & Code',
-    title: 'Coffee & Code',
-    description: 'My favorite spot for deep work and creative thinking.',
+    src: '/images/gallery/Personal-2.jpg',
+    alt: 'Discord Meet-up',
+    title: 'Discord Meet-up',
+    description: 'Meeting up with friends from Discord for a fun day out with some project discussions.',
     category: 'Personal',
-    date: '2024-02-15',
+    date: '2024-04-25',
   },
 
   // 👇 ADD YOUR NEW IMAGES HERE 👇
