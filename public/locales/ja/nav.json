@@ -1,14 +1,14 @@
 {
-  "home": "Home",
-  "about": "About",
-  "projects": "Projects",
-  "gallery": "Gallery",
-  "resume": "Resume",
-  "skills": "Skills",
-  "hobbies": "Hobbies",
-  "games": "Games",
-  "certificates": "Certificates",
-  "contact": "Contact",
-  "blog": "Blog",
-  "portfolio": "Portfolio"
+  "home": "ホーム",
+  "about": "について",
+  "projects": "プロジェクト",
+  "gallery": "ギャラリー",
+  "resume": "履歴書",
+  "skills": "スキル",
+  "hobbies": "趣味",
+  "games": "ゲーム",
+  "certificates": "証明書",
+  "contact": "お問い合わせ",
+  "blog": "ブログ",
+  "portfolio": "ポートフォリオ"
 }

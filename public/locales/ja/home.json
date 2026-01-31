@@ -1,9 +1,9 @@
 {
-  "greeting": "Hey there! 👋",
-  "title": "I'm James Aries",
-  "subtitle": "Full-Stack Developer • DevSecOps Enthusiast • Design Planning • Research & AI",
-  "description": "Bridging the gap between robust backend systems and modern frontend experiences. A graduating senior dedicated to building secure, data-driven applications with a \"maximum effort\" mindset.",
-  "cta": "Let's Work Together",
-  "scroll": "Scroll to explore",
-  "tagline": "Code with passion, design with purpose"
+  "greeting": "こんにちは！👋",
+  "title": "僕はジェームス・アリーズです",
+  "subtitle": "フルスタック開発者 • DevSecOps 愛好家 • デザイン計画 • 研究とAI",
+  "description": "堅牢なバックエンドシステムと最新のフロントエンド体験のギャップを埋めています。安全でデータ駆動型のアプリケーション構築に専念しており、\"最大限の努力\"という考え方を持つ卒業間近のシニア開発者です。",
+  "cta": "一緒に仕事をしましょう",
+  "scroll": "スクロールして探索",
+  "tagline": "情熱を持ってコードを書き、目的を持ってデザインする"
 }

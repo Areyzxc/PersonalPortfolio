@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from '@/src/components/theme';
 import { Navigation } from '@/src/components/common';
+import { I18nProvider } from '@/src/components/providers/I18nProvider';
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -76,10 +77,12 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-primary text-white overflow-x-hidden">
-        <ThemeProvider>
-          <Navigation />
-          <main className="pt-16">{children}</main>
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider>
+            <Navigation />
+            <main className="pt-16">{children}</main>
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );
