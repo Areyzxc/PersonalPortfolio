@@ -1,0 +1,155 @@
+    /* Light Mode Specific Component Styling */
+
+    /* Form Inputs in Light Mode */
+    :root.light input[type="text"],
+    :root.light input[type="email"],
+    :root.light textarea {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 2px solid #cbd5e1;
+    transition: all 0.3s ease;
+    }
+
+    :root.light input[type="text"]:focus,
+    :root.light input[type="email"]:focus,
+    :root.light textarea:focus {
+    background-color: #f8fafc;
+    border-color: #2563eb;
+    outline: none;
+    }
+
+    :root.light input[type="text"]::placeholder,
+    :root.light input[type="email"]::placeholder,
+    :root.light textarea::placeholder {
+    color: #64748b;
+    }
+
+    /* Buttons in Light Mode */
+    :root.light button {
+    color: #0f172a;
+    }
+
+    :root.light button:hover {
+    background-color: #f1f5f9;
+    }
+
+    /* Cards and Containers in Light Mode - but NOT skill/stats cards */
+    :root.light .rounded-lg:not(.border-accent):not(.bg-secondary) {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    }
+
+    :root.light .bg-gradient-to-br,
+    :root.light .backdrop-blur {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #cbd5e1;
+    }
+
+    /* Override for skill cards in light mode - keep transparent background */
+    :root.light [class~="border-accent/20"] {
+    background-color: transparent !important;
+    }
+
+    /* Text on Light Background */
+    :root.light .text-gray-600 {
+    color: #475569;
+    }
+
+    :root.light .text-gray-700 {
+    color: #334155;
+    }
+
+    /* Links in Light Mode */
+    :root.light a,
+    :root.light [class*="link"] {
+    color: #2563eb;
+    text-decoration: none;
+    }
+
+    :root.light a:hover,
+    :root.light [class*="link"]:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+    }
+
+    /* Borders in Light Mode */
+    :root.light [class*="border"] {
+    border-color: #cbd5e1;
+    }
+
+    :root.light [class*="border-white"],
+    :root.light [class*="border-white/10"],
+    :root.light [class*="border-white/20"] {
+    border-color: #cbd5e1;
+    }
+
+    /* Dividers in Light Mode */
+    :root.light hr,
+    :root.light [class*="divider"] {
+    background-color: #cbd5e1;
+    border-color: #cbd5e1;
+    }
+
+    /* Selection Text in Light Mode */
+    :root.light ::selection {
+    background-color: #2563eb;
+    color: #ffffff;
+    }
+
+    /* Scroll Indicator in Light Mode */
+    :root.light [class*="scroll"] {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+    }
+
+    /* Badge/Tag colors in Light Mode */
+    :root.light [class*="badge"],
+    :root.light [class*="tag"],
+    :root.light [class*="pill"] {
+    background-color: #dbeafe;
+    color: #0c4a6e;
+    border-color: #7dd3fc;
+    }
+
+    /* Progress bars in Light Mode */
+    :root.light [class*="progress"] {
+    background-color: #e0e7ff;
+    color: #2563eb;
+    }
+
+    :root.light [role="progressbar"] {
+    background-color: #dbeafe;
+    }
+
+    /* Modal/Dialog in Light Mode */
+    :root.light [class*="modal"],
+    :root.light [class*="dialog"] {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    }
+
+    /* Shadows in Light Mode - More Subtle */
+    :root.light [class*="shadow"] {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    }
+
+    :root.light [class*="shadow-lg"] {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Focus States in Light Mode */
+    :root.light *:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    }
+
+    /* Gallery Overlay - Ensure white text is visible in light mode */
+    :root.light .absolute.bottom-0 {
+    color: #ffffff !important;
+    }
+
+    :root.light .absolute.bottom-0 h3,
+    :root.light .absolute.bottom-0 p,
+    :root.light .absolute.bottom-0 span {
+    color: #ffffff !important;
+    }

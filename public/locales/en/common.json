@@ -1,0 +1,13 @@
+{
+  "title": "Personal Portfolio",
+  "description": "Full-stack developer and creative thinker",
+  "language": "English",
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "terminal": "Terminal Theme",
+  "loading": "Loading...",
+  "error": "Something went wrong",
+  "back": "Go Back",
+  "next": "Next",
+  "previous": "Previous"
+}

@@ -1,0 +1,13 @@
+{
+  "title": "Portfolio Personnel",
+  "description": "Développeur full-stack et penseur créatif",
+  "language": "Français",
+  "darkMode": "Mode Sombre",
+  "lightMode": "Mode Clair",
+  "terminal": "Thème Terminal",
+  "loading": "Chargement...",
+  "error": "Une erreur s'est produite",
+  "back": "Retour",
+  "next": "Suivant",
+  "previous": "Précédent"
+}

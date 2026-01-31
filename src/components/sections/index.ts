@@ -1,0 +1,14 @@
+export { HeroSection } from './HeroSection';
+export { AboutSection } from './AboutSection';
+export { SkillsSection } from './SkillsSection';
+export { GallerySection } from './GallerySection';
+export { ProjectsSection } from './ProjectsSection';
+export { ProjectCard } from './ProjectCard';
+export { ProjectFilter } from './ProjectFilter';
+export { ProjectGrid } from './ProjectGrid';
+export { ResumeSection } from './ResumeSection';
+export { CertificatesSection } from './CertificatesSection';
+export { HobbiesSection } from './HobbiesSection';
+export { GamesSection } from './GamesSection';
+export { ContactSection } from './ContactSection';
+export { TechStackMarquee } from './TechStackMarquee';
