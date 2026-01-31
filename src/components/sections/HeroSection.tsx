@@ -99,7 +99,7 @@ export function HeroSection() {
       onMouseMove={handleMouseMove}
     >
       {/* 1. Background Noise Texture (Optional: Adds that 'Acid' grain) */}
-      <div className="absolute inset-0 opacity-[0.19] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+      <div className="absolute inset-0 opacity-[0.08] pointer-events-none" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 400 400\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.9\" numOctaves=\"4\" result=\"noise\" /%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" fill=\"%23000\" filter=\"url(%23noiseFilter)\" opacity=\"0.5\" /%3E%3C/svg%3E')"}}></div>
 
       {/* 2. The Main HUD Container */}
       <div className="relative w-full max-w-6xl z-10 border-t border-b border-accent/20 light-mode:border-gray-300 terminal-mode:border-emerald-500/30 py-8 md:py-16">
