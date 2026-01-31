@@ -1,0 +1,201 @@
+This is going to be a massive upgrade. We will transform your current "Clean/Soft" Hero section into a **"Technical/Brutalist" Command Center**.
+
+To keep your current **Dark Blue/Cyan** color scheme (instead of the Red/Black reference), we will replace the red lines with your `border-accent/50` (Cyan/Blue). This will make it look like a **Holographic HUD**.
+
+### **Prerequisites**
+
+Make sure you have installed the 3D libraries as discussed:
+
+```bash
+npm install three @types/three @react-three/fiber @react-three/drei
+
+```
+
+---
+
+### **The New Code: `HeroSection.tsx**`
+
+I have combined **React Three Fiber** (for the globe) with **Tailwind Grid** (for the HUD layout).
+
+```tsx
+'use client';
+
+import { useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Sphere, MeshDistortMaterial } from '@react-three/drei';
+import { ArrowDown, Crosshair, Globe, Cpu, Wifi } from 'lucide-react';
+import { useScrollPosition } from '../../lib/hooks/useScrollPosition';
+
+// --- 3D COMPONENT: The Wireframe Globe ---
+const WireframeGlobe = () => {
+  const meshRef = useRef<any>(null);
+
+  // Auto-rotate the globe
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.2; // Slow rotation
+      meshRef.current.rotation.x += delta * 0.05; // Slight tilt
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} scale={2.5}>
+      {/* args: [radius, widthSegments, heightSegments] 
+         Lower segments = more "retro/digital" look 
+      */}
+      <sphereGeometry args={[1, 16, 16]} /> 
+      <meshBasicMaterial 
+        color="#22d3ee" // Cyan (Tailwind's cyan-400) - MATCHES YOUR ACCENT
+        wireframe={true} 
+        transparent 
+        opacity={0.3} 
+      />
+    </mesh>
+  );
+};
+
+// --- UI COMPONENTS: The "HUD" Decorations ---
+const CrosshairCorner = ({ className }: { className: string }) => (
+  <div className={`absolute w-4 h-4 border-accent/60 ${className}`}>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[1px] bg-accent/60"></div>
+      <div className="h-full w-[1px] bg-accent/60 absolute"></div>
+    </div>
+  </div>
+);
+
+// --- MAIN COMPONENT ---
+export function HeroSection() {
+  const scrollPosition = useScrollPosition();
+  const opacity = Math.max(0, 1 - scrollPosition / 700); // Fade out faster
+
+  return (
+    <section
+      id="home"
+      className="relative min-h-screen pt-20 px-4 flex flex-col items-center justify-center overflow-hidden bg-primary terminal-mode:bg-black"
+      style={{ opacity }}
+    >
+      {/* 1. Background Noise Texture (Optional: Adds that 'Acid' grain) */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+
+      {/* 2. The Main HUD Container */}
+      <div className="relative w-full max-w-6xl z-10 border-t border-b border-accent/20 py-8 md:py-16">
+        
+        {/* HUD Top Meta Data */}
+        <div className="absolute top-0 left-0 w-full flex justify-between text-[10px] md:text-xs font-mono text-accent/60 tracking-widest px-2 -mt-6">
+           <div className="flex gap-4">
+             <span className="flex items-center gap-1"><Cpu size={12}/> SYSTEM: ONLINE</span>
+             <span className="flex items-center gap-1"><Wifi size={12}/> CONNECTED</span>
+           </div>
+           <div>ID: 033-DEV-SEC</div>
+        </div>
+
+        {/* The Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          
+          {/* LEFT: Typography & Content */}
+          <div className="relative p-6 border-l border-r border-accent/20">
+             {/* Decorative Corners */}
+             <CrosshairCorner className="-top-1 -left-1 border-t border-l" />
+             <CrosshairCorner className="-bottom-1 -right-1 border-b border-r" />
+
+             <motion.div
+               initial={{ opacity: 0, x: -20 }}
+               animate={{ opacity: 1, x: 0 }}
+               transition={{ duration: 0.8 }}
+             >
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="animate-pulse w-2 h-2 bg-accent rounded-full"></span>
+                  <span className="text-sm font-mono text-accent tracking-widest">
+                    BSIT SENIOR // CLASS 2026
+                  </span>
+                </div>
+
+                <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 leading-none tracking-tighter mb-2">
+                  JAMES <br/> ARIES
+                </h1>
+                
+                <h2 className="text-2xl md:text-3xl font-mono text-accent mb-6">
+                  FULL-STACK_DEV
+                </h2>
+
+                <p className="text-gray-400 max-w-md text-sm md:text-base leading-relaxed border-l-2 border-accent/50 pl-4">
+                  Bridging the gap between robust backend systems (PHP/MySQL) and modern frontend experiences (Next.js). 
+                  <br/><span className="text-accent/80 font-mono text-xs mt-2 block"> // MAXIMUM_EFFORT_MODE_ENABLED</span>
+                </p>
+
+                {/* Buttons */}
+                <div className="flex gap-4 mt-8">
+                  <a href="#projects" className="group relative px-6 py-3 bg-accent/10 border border-accent text-accent hover:bg-accent hover:text-primary transition-all font-mono text-sm">
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent group-hover:bg-white transition-colors"></span>
+                    VIEW_MODULES
+                  </a>
+                  <a href="#contact" className="px-6 py-3 border border-gray-700 text-gray-400 hover:border-accent hover:text-accent transition-all font-mono text-sm">
+                     INIT_CONTACT
+                  </a>
+                </div>
+             </motion.div>
+          </div>
+
+          {/* RIGHT: The 3D Visualization */}
+          <div className="relative h-[300px] md:h-[500px] w-full flex items-center justify-center">
+            {/* The 3D Canvas */}
+            <Canvas className="absolute inset-0 z-0">
+               <ambientLight intensity={0.5} />
+               <pointLight position={[10, 10, 10]} />
+               <WireframeGlobe />
+            </Canvas>
+
+            {/* Overlay Text on top of Globe */}
+            <div className="absolute bottom-0 right-0 text-right font-mono text-xs text-accent/40 pointer-events-none">
+               <p>DIMENSION: 3D</p>
+               <p>RENDER: R3F</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 3. Bottom Scroll Indicator */}
+      <motion.div 
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-10 flex flex-col items-center gap-2 cursor-pointer text-accent/50 hover:text-accent transition-colors"
+        onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+      >
+        <span className="text-[10px] font-mono tracking-widest">SCROLL_DOWN</span>
+        <ArrowDown size={20} />
+      </motion.div>
+
+    </section>
+  );
+}
+
+```
+
+---
+
+### **Task for your Coding Partner (Theme Behavior)**
+
+Since you switch between "Light Mode" and "Terminal Mode", this brutalist style (which relies on borders) needs careful handling.
+
+**Please forward this task list to your partner:**
+
+1. **Light Mode Handling:**
+* In `Light Mode`, the `border-accent/20` might look too faint or too harsh depending on the background.
+* **Task:** Add a condition or a specific Tailwind class for light mode (e.g., `light-mode:border-gray-300`) to ensure the grid lines remain visible but elegant.
+
+
+2. **3D Globe Color:**
+* Currently, the Globe is hardcoded to Cyan (`#22d3ee`).
+* **Task:** Pass the current theme color to the `<WireframeGlobe />` component so the globe turns Dark Blue or Black when in Light Mode (for better contrast).
+
+
+3. **Font Weight:**
+* The "Acid" style uses `font-black` (very thick).
+* **Task:** Ensure the font loads correctly. If `Inter Black` or `Oswald` isn't available, the fallback might look weak. Consider adding `className="font-black"` to the global CSS or importing a heavier weight from Google Fonts.
+
+
+
+This new Hero section will make your site look less like a "Student Portfolio" and more like a "System Interface." 🚀

@@ -2,8 +2,11 @@
 
     import { useState, useEffect } from 'react';
     import { motion } from 'framer-motion';
-    import { Mail, Phone, MapPin, Github, Linkedin, Twitter, Send, Facebook, MessageCircle, Instagram } from 'lucide-react';
+    import { Mail, Phone, MapPin, Github, Linkedin, Twitter, Send, Facebook, Instagram, FoldVertical, UnfoldVertical } from 'lucide-react';
     import emailjs from '@emailjs/browser';
+    import { BsTwitterX } from "react-icons/bs";
+    import { FaGithub, FaSquareThreads } from "react-icons/fa6";
+    import { FaFacebookSquare, FaInstagram, FaLinkedin } from "react-icons/fa";
 
     interface ContactInfo {
     email: string;
@@ -47,6 +50,7 @@
         message: '',
     });
 
+    const [isExpanded, setIsExpanded] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
@@ -100,12 +104,12 @@
     };
 
     const socialLinks = [
-        { icon: Github, href: contactInfo.github, label: 'GitHub' },
-        { icon: Linkedin, href: contactInfo.linkedin, label: 'LinkedIn' },
-        { icon: Twitter, href: contactInfo.twitter, label: 'Twitter' },
-        { icon: Facebook, href: contactInfo.facebook, label: 'Facebook' },
-        { icon: MessageCircle, href: contactInfo.threads, label: 'Threads' },
-        { icon: Instagram, href: contactInfo.instagram, label: 'Instagram' },
+        { icon: FaGithub, href: contactInfo.github, label: 'GitHub' },
+        { icon: FaLinkedin, href: contactInfo.linkedin, label: 'LinkedIn' },
+        { icon: BsTwitterX, href: contactInfo.twitter, label: 'Twitter' },
+        { icon: FaFacebookSquare, href: contactInfo.facebook, label: 'Facebook' },
+        { icon: FaSquareThreads, href: contactInfo.threads, label: 'Threads' },
+        { icon: FaInstagram, href: contactInfo.instagram, label: 'Instagram' },
     ].filter((link) => link.href);
 
     const containerVariants = {
@@ -129,7 +133,7 @@
     };
 
     return (
-        <section id="contact" className="py-24 px-4 bg-gradient-to-b from-transparent via-secondary/20 to-secondary/30">
+        <section id="contact" className="py-24 px-4 bg-gradient-to-b from-transparent via-secondary/20 to-secondary/30 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
             {/* Section Title */}
             <motion.div
@@ -137,15 +141,33 @@
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-16 text-center"
+            className="mb-10 flex justify-between items-start"
             >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full mx-auto"></div>
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl mx-auto">
-                Have a question or want to collaborate? Feel free to reach out! I'm always open to new opportunities and interesting projects.
-            </p>
+            <div className="text-center flex-1">
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h2>
+                <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full mx-auto"></div>
+                <p className="text-gray-400 text-lg mt-6 max-w-2xl mx-auto">
+                    Have a question or want to collaborate? Feel free to reach out! I'm always open to new opportunities and interesting projects.
+                </p>
+            </div>
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:bg-accent/10 transition-colors duration-300 flex-shrink-0 ml-6 light-mode:border-blue-400 light-mode:text-blue-600 light-mode:hover:bg-blue-50 terminal-mode:border-emerald-500 terminal-mode:text-emerald-400 terminal-mode:hover:bg-emerald-900/50"
+                aria-label="Toggle contact section"
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
             </motion.div>
 
+            {/* Collapsible Content Container */}
+            <motion.div
+                initial={false}
+                animate={{ height: isExpanded ? "auto" : 0, opacity: isExpanded ? 1 : 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+            >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Contact Information Cards */}
             <motion.div
@@ -399,6 +421,7 @@
                 </motion.form>
             </motion.div>
             </div>
+            </motion.div>
         </div>
         </section>
     );

@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { gamesData, type Game } from '../../data/gamesData';
-import { Star, ChevronDown, ExternalLink, Play } from 'lucide-react';
+import { Star, ChevronDown, ExternalLink, Play, FoldVertical, UnfoldVertical } from 'lucide-react';
 import Image from 'next/image';
 
 const containerVariants = {
@@ -44,11 +44,12 @@ const statusConfig: Record<Game['status'], { label: string; color: string; icon:
 
 export const GamesSection = () => {
   const [expandedGame, setExpandedGame] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <section
       id="games"
-      className="min-h-screen py-20 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-primary to-secondary/50 light-mode:from-white light-mode:to-gray-50 terminal-mode:from-emerald-950 terminal-mode:to-emerald-950/70"
+      className="min-h-screen py-20 px-4 md:px-6 lg:px-8 bg-gradient-to-b from-primary to-secondary/50 light-mode:from-white light-mode:to-gray-50 terminal-mode:from-emerald-950 terminal-mode:to-emerald-950/70 transition-all duration-300"
     >
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
@@ -56,28 +57,46 @@ export const GamesSection = () => {
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="flex justify-between items-start mb-10"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
-            Games I'm Playing
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
-            My gaming journey and favorite titles
-          </p>
+          <div className="text-center flex-1">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
+              Games I'm Playing
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
+              My gaming journey and favorite titles
+            </p>
+          </div>
+          <motion.button
+            onClick={() => setIsExpanded(!isExpanded)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-3 rounded-full border border-accent/30 text-accent hover:bg-accent/10 transition-colors duration-300 flex-shrink-0 ml-6 light-mode:border-blue-400 light-mode:text-blue-600 light-mode:hover:bg-blue-50 terminal-mode:border-emerald-500 terminal-mode:text-emerald-400 terminal-mode:hover:bg-emerald-900/50"
+            aria-label="Toggle games section"
+          >
+            {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+          </motion.button>
         </motion.div>
 
-        {/* Games Grid */}
+        {/* Collapsible Content Container */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, margin: '0px 0px -100px 0px' }}
-          className="space-y-8"
+          initial={false}
+          animate={{ height: isExpanded ? "auto" : 0, opacity: isExpanded ? 1 : 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          style={{ overflow: "hidden" }}
         >
+          {/* Games Grid */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, margin: '0px 0px -100px 0px' }}
+            className="space-y-8"
+          >
           <AnimatePresence mode="wait">
             {gamesData.map((game, index) => {
               const status = statusConfig[game.status];
-              const isExpanded = expandedGame === game.id;
+              const isGameExpanded = expandedGame === game.id;
 
               return (
                 <motion.div
@@ -92,7 +111,7 @@ export const GamesSection = () => {
                   <motion.div
                     className="group cursor-pointer"
                     onClick={() =>
-                      setExpandedGame(isExpanded ? null : game.id)
+                      setExpandedGame(isGameExpanded ? null : game.id)
                     }
                     whileHover={{ y: -8 }}
                   >
@@ -207,7 +226,7 @@ export const GamesSection = () => {
                               )}
                               <motion.button
                                 className="ml-4 flex items-center gap-2 text-accent font-semibold group-hover:text-accent-light light-mode:text-blue-600 light-mode:group-hover:text-blue-400 terminal-mode:text-emerald-300 terminal-mode:group-hover:text-emerald-200"
-                                animate={{ rotate: isExpanded ? 180 : 0 }}
+                                animate={{ rotate: isGameExpanded ? 180 : 0 }}
                                 transition={{ duration: 0.3 }}
                               >
                                 Details
@@ -221,7 +240,7 @@ export const GamesSection = () => {
 
                     {/* Expandable Details Section */}
                     <AnimatePresence>
-                      {isExpanded && (
+                      {isGameExpanded && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
@@ -360,18 +379,19 @@ export const GamesSection = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty State */}
-        {gamesData.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <p className="text-gray-400 text-lg light-mode:text-gray-600 terminal-mode:text-emerald-300">
-              No games added yet. Check back soon! 🎮
-            </p>
-          </motion.div>
-        )}
+          {/* Empty State */}
+          {gamesData.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16"
+            >
+              <p className="text-gray-400 text-lg light-mode:text-gray-600 terminal-mode:text-emerald-300">
+                No games added yet. Check back soon! 🎮
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </section>
   );

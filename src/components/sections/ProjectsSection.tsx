@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, FoldVertical, UnfoldVertical } from 'lucide-react';
+import { MdStar } from "react-icons/md";
 import { projectsData, getUniqueTechnologies, getUniqueCategories, getUniqueYears, Project } from '../../data/projectsData';
 import { ProjectCard } from './ProjectCard';
 import { ProjectFilter } from './ProjectFilter';
@@ -15,11 +16,22 @@ export const ProjectsSection: React.FC = () => {
   const [selectedTechnology, setSelectedTechnology] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [expandedProject, setExpandedProject] = useState<Project | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Get unique values for filters
   const categories = useMemo(() => getUniqueCategories(), []);
   const technologies = useMemo(() => getUniqueTechnologies(), []);
   const years = useMemo(() => getUniqueYears(), []);
+
+  // Auto-scroll to modal when project is selected
+  useEffect(() => {
+    if (expandedProject) {
+      const projectsSection = document.getElementById('projects');
+      if (projectsSection) {
+        projectsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [expandedProject]);
 
   // Apply filters and sort
   const filteredProjects = useMemo(() => {
@@ -41,25 +53,48 @@ export const ProjectsSection: React.FC = () => {
   };
 
   return (
-    <>
-      <section id="projects" className="py-24 px-4 bg-secondary/30 light-mode:bg-gray-50 terminal-mode:bg-emerald-950/20">
+    <section id="projects" className="py-24 px-4 bg-secondary/30 light-mode:bg-gray-50 terminal-mode:bg-emerald-950/20 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
+          {/* Section Header with Collapse Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-10 flex justify-between items-start"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 light-mode:text-gray-900 terminal-mode:text-emerald-300">
-              Featured Projects
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full light-mode:from-blue-600 light-mode:to-blue-400 terminal-mode:from-emerald-500 terminal-mode:to-emerald-300"></div>
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl light-mode:text-gray-600 terminal-mode:text-emerald-200">
-              Explore my latest projects showcasing web development, full-stack applications, games, and tools I've built.
-            </p>
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 light-mode:text-gray-900 terminal-mode:text-emerald-300">
+                Featured Projects
+              </h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full light-mode:from-blue-600 light-mode:to-blue-400 terminal-mode:from-emerald-500 terminal-mode:to-emerald-300"></div>
+              <p className="text-gray-400 text-lg mt-6 max-w-2xl light-mode:text-gray-600 terminal-mode:text-emerald-200">
+                Explore my latest projects showcasing web development, full-stack applications, games, and tools I've built.
+              </p>
+            </div>
+
+            {/* Collapse Toggle Button */}
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+                aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
           </motion.div>
+
+          {/* Collapsible Content Area */}
+          <motion.div
+              initial={false}
+              animate={{ 
+                  height: isExpanded ? "auto" : 0,
+                  opacity: isExpanded ? 1 : 0
+              }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+          >
 
           {/* Filter Controls */}
           <ProjectFilter
@@ -91,7 +126,7 @@ export const ProjectsSection: React.FC = () => {
             viewport={{ once: true, margin: '0px 0px -100px 0px' }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 auto-rows-max"
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project, index) => (
                   <motion.div
@@ -123,43 +158,37 @@ export const ProjectsSection: React.FC = () => {
               )}
             </AnimatePresence>
           </motion.div>
+          </motion.div>
         </div>
-      </section>
 
-      {/* Project Detail Modal */}
-      <AnimatePresence>
+        {/* Project Detail Modal */}
+        <AnimatePresence>
         {expandedProject && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setExpandedProject(null)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            />
-
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setExpandedProject(null)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
             {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-4 md:inset-16 lg:inset-32 z-50 overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-primary rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
             >
-              <div
-                className="bg-primary rounded-lg shadow-2xl max-w-3xl mx-auto light-mode:bg-white terminal-mode:bg-emerald-950"
-                onClick={(e) => e.stopPropagation()}
+              {/* Close Button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setExpandedProject(null)}
+                className="absolute top-4 right-4 p-2 hover:bg-secondary/50 rounded-full transition-colors z-10 light-mode:hover:bg-gray-100 terminal-mode:hover:bg-emerald-900"
               >
-                {/* Close Button */}
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setExpandedProject(null)}
-                  className="absolute top-4 right-4 p-2 hover:bg-secondary/50 rounded-full transition-colors light-mode:hover:bg-gray-100 terminal-mode:hover:bg-emerald-900"
-                >
-                  <X size={24} className="text-foreground" />
-                </motion.button>
+                <X size={24} className="text-foreground" />
+              </motion.button>
 
                 {/* Modal Content */}
                 <div className="p-8">
@@ -295,12 +324,11 @@ export const ProjectsSection: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </>
         )}
       </AnimatePresence>
-    </>
-  );
-};
+      </section>
+    );
+  };
 

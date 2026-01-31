@@ -1,8 +1,8 @@
     'use client';
 
-    import { useState } from 'react';
+    import { useState, useEffect } from 'react';
     import { motion, AnimatePresence } from 'framer-motion';
-    import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+    import { X, ChevronLeft, ChevronRight, FoldVertical, UnfoldVertical } from 'lucide-react';
     import { galleryImages, GalleryImage } from '../../data/galleryData';
 
     interface GallerySectionProps {
@@ -15,9 +15,20 @@
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [isExpanded, setIsExpanded] = useState(true);
 
     // Get unique categories
     const categories = Array.from(new Set(images.map((img) => img.category)));
+
+    // Auto-scroll to modal when image is selected
+    useEffect(() => {
+        if (selectedImage) {
+            const gallerySection = document.getElementById('gallery');
+            if (gallerySection) {
+                gallerySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }, [selectedImage]);
 
     // Filter images by category
     const filteredImages = selectedCategory
@@ -62,22 +73,46 @@
     };
 
     return (
-        <section id="gallery" className="py-24 px-4 bg-secondary/30">
+        <section id="gallery" className="py-24 px-4 bg-secondary/30 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
-            {/* Section Title */}
+            {/* Section Header with Collapse Button */}
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-10 flex justify-between items-start"
             >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl">
-                A collection of moments from my travels, events, and personal projects. Click any image for a closer look!
-            </p>
+            <div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h2>
+                <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
+                <p className="text-gray-400 text-lg mt-6 max-w-2xl">
+                    A collection of moments from my travels, events, and personal projects. Click any image for a closer look!
+                </p>
+            </div>
+
+            {/* Collapse Toggle Button */}
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+                aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
             </motion.div>
+
+            {/* Collapsible Content Area */}
+            <motion.div
+                initial={false}
+                animate={{ 
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+            >
 
             {/* Category Filter */}
             <motion.div
@@ -167,9 +202,9 @@
 
                     {/* Click to View Indicator */}
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                        className="absolute top-3 right-3 bg-accent/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-accent-light border border-accent/40"
+                        initial={{ opacity: 1 }}
+                        whileHover={{ opacity: 1, scale: 1.05 }}
+                        className="absolute top-3 right-3 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white border-2 border-black/30 font-semibold transition-all"
                     >
                         Click to view
                     </motion.div>
@@ -189,6 +224,7 @@
                 <p className="text-gray-400 text-lg">No images in this category yet.</p>
             </motion.div>
             )}
+            </motion.div>
         </div>
 
         {/* Lightbox Modal */}
@@ -214,7 +250,7 @@
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setSelectedImage(null)}
-                    className="absolute top-4 right-4 z-10 bg-accent/20 hover:bg-accent/40 text-white p-2 rounded-full transition-all backdrop-blur-sm"
+                    className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
                 >
                     <X size={24} />
                 </motion.button>
@@ -246,7 +282,7 @@
                             e.stopPropagation();
                             handlePrevious();
                         }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-accent/20 hover:bg-accent/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
                         >
                         <ChevronLeft size={24} />
                         </motion.button>
@@ -257,7 +293,7 @@
                             e.stopPropagation();
                             handleNext();
                         }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-accent/20 hover:bg-accent/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
                         >
                         <ChevronRight size={24} />
                         </motion.button>

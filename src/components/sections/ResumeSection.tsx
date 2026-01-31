@@ -1,16 +1,28 @@
     'use client';
 
-    import { useState } from 'react';
+    import { useState, useEffect } from 'react';
     import { motion, AnimatePresence } from 'framer-motion';
-    import { Download, Printer, ChevronDown } from 'lucide-react';
+    import { Download, Printer, ChevronDown, X, FileText, Clipboard, Eye, User, Briefcase, GraduationCap, Trophy, Globe, Star, Check, FoldVertical, UnfoldVertical } from 'lucide-react';
     import { resumeData, Experience, Education, Certification, Language, Award } from '../../data/resumeData';
 
     type TabType = 'resume' | 'cv';
 
     export const ResumeSection: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('resume');
+    const [showModal, setShowModal] = useState(false);
     const [expandedLanguage, setExpandedLanguage] = useState<number | null>(null);
     const [expandedAward, setExpandedAward] = useState<number | null>(null);
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    // Auto-scroll to modal when opened
+    useEffect(() => {
+        if (showModal) {
+            const resumeSection = document.getElementById('resume');
+            if (resumeSection) {
+                resumeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }, [showModal]);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -51,8 +63,9 @@
         transition={{ duration: 0.5 }}
         className="mb-12 p-6 bg-gradient-to-r from-accent/10 to-accent-light/10 border border-accent/30 rounded-lg light-mode:from-blue-50 light-mode:to-blue-100 light-mode:border-blue-200 terminal-mode:from-emerald-600/20 terminal-mode:to-emerald-500/20 terminal-mode:border-emerald-600"
         >
-        <h4 className="text-lg font-bold text-white mb-3 light-mode:text-gray-900 terminal-mode:text-emerald-300">
-            👤 Professional Summary
+        <h4 className="text-lg font-bold text-white mb-3 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2">
+            <User size={20} />
+            Professional Summary
         </h4>
         <p className="text-gray-300 light-mode:text-gray-700 terminal-mode:text-emerald-100 leading-relaxed">
             {resumeData.professionalSummary}
@@ -70,9 +83,10 @@
         >
         <motion.h3
             variants={itemVariants}
-            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300"
+            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2"
         >
-            💼 Professional Experience
+            <Briefcase size={32} />
+            Professional Experience
         </motion.h3>
 
         <div className="space-y-6">
@@ -110,9 +124,7 @@
                 <ul className="space-y-1">
                     {experience.achievements.map((achievement, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-300 text-sm light-mode:text-gray-700 terminal-mode:text-emerald-100">
-                        <span className="text-accent mt-1 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400">
-                        ✓
-                        </span>
+                        <Check size={16} className="text-accent mt-1 flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400" />
                         {achievement}
                     </li>
                     ))}
@@ -147,9 +159,10 @@
         >
         <motion.h3
             variants={itemVariants}
-            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300"
+            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2"
         >
-            🎓 Education
+            <GraduationCap size={32} />
+            Education
         </motion.h3>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -198,9 +211,10 @@
         >
         <motion.h3
             variants={itemVariants}
-            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300"
+            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2"
         >
-            🏆 Certifications
+            <Trophy size={32} />
+            Certifications
         </motion.h3>
 
         <motion.div
@@ -245,9 +259,10 @@
         >
         <motion.h3
             variants={itemVariants}
-            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300"
+            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2"
         >
-            🌍 Languages
+            <Globe size={32} />
+            Languages
         </motion.h3>
 
         <div className="space-y-3">
@@ -316,9 +331,10 @@
         >
         <motion.h3
             variants={itemVariants}
-            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300"
+            className="text-3xl font-bold mb-8 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center gap-2"
         >
-            ⭐ Awards & Achievements
+            <Star size={32} />
+            Awards & Achievements
         </motion.h3>
 
         <div className="space-y-3">
@@ -379,24 +395,48 @@
     );
 
     return (
-        <section id="resume" className="py-24 px-4 bg-primary light-mode:bg-white terminal-mode:bg-emerald-950">
+        <section id="resume" className="py-24 px-4 bg-primary light-mode:bg-white terminal-mode:bg-emerald-950 transition-all duration-300">
         <div className="max-w-4xl mx-auto">
-            {/* Section Header */}
+            {/* Section Header with Collapse Button */}
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-12"
+            className="mb-10 flex justify-between items-start"
             >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 light-mode:text-gray-900 terminal-mode:text-emerald-300">
-                Resume & CV
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full light-mode:from-blue-600 light-mode:to-blue-400 terminal-mode:from-emerald-500 terminal-mode:to-emerald-300"></div>
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl light-mode:text-gray-600 terminal-mode:text-emerald-200">
-                {resumeData.summary}
-            </p>
+            <div>
+                <h2 className="text-4xl md:text-5xl text-center font-bold mb-4 light-mode:text-gray-900 terminal-mode:text-emerald-300 flex items-center justify-center gap-2">
+                    Resume & CV
+                </h2>
+                <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full light-mode:from-blue-600 light-mode:to-blue-400 terminal-mode:from-emerald-500 terminal-mode:to-emerald-300"></div>
+                <p className="text-gray-400 text-justify text-lg mt-6 max-w-2xl light-mode:text-gray-600 terminal-mode:text-emerald-200">
+                    {resumeData.summary}
+                </p>
+            </div>
+
+            {/* Collapse Toggle Button */}
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+                aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
             </motion.div>
+
+            {/* Collapsible Content Area */}
+            <motion.div
+                initial={false}
+                animate={{ 
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+            >
 
             {/* Tab Buttons */}
             <motion.div
@@ -408,23 +448,25 @@
             >
             <button
                 onClick={() => setActiveTab('resume')}
-                className={`px-6 py-3 font-semibold rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 font-semibold rounded-lg transition-all ${
                 activeTab === 'resume'
                     ? 'bg-accent text-white light-mode:bg-blue-600 terminal-mode:bg-emerald-600'
                     : 'bg-secondary/30 text-gray-300 hover:bg-secondary/50 light-mode:bg-gray-100 light-mode:text-gray-700 light-mode:hover:bg-gray-200 terminal-mode:bg-emerald-900/30 terminal-mode:text-emerald-200'
                 }`}
             >
-                📄 Resume
+                <FileText size={20} />
+                Resume
             </button>
             <button
                 onClick={() => setActiveTab('cv')}
-                className={`px-6 py-3 font-semibold rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 font-semibold rounded-lg transition-all ${
                 activeTab === 'cv'
                     ? 'bg-accent text-white light-mode:bg-blue-600 terminal-mode:bg-emerald-600'
                     : 'bg-secondary/30 text-gray-300 hover:bg-secondary/50 light-mode:bg-gray-100 light-mode:text-gray-700 light-mode:hover:bg-gray-200 terminal-mode:bg-emerald-900/30 terminal-mode:text-emerald-200'
                 }`}
             >
-                📋 CV
+                <Clipboard size={20} />
+                CV
             </button>
             </motion.div>
 
@@ -448,11 +490,11 @@
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handlePrint}
-                className="flex items-center gap-2 px-6 py-3 border-2 border-accent text-accent rounded-lg font-semibold transition-all hover:bg-accent/10 light-mode:border-blue-600 light-mode:text-blue-600 light-mode:hover:bg-blue-50 terminal-mode:border-emerald-600 terminal-mode:text-emerald-300 terminal-mode:hover:bg-emerald-600/20"
+                onClick={() => setShowModal(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-accent/20 border-2 border-accent text-accent rounded-lg font-semibold transition-all hover:bg-accent/30 light-mode:bg-blue-50 light-mode:border-blue-600 light-mode:text-blue-600 light-mode:hover:bg-blue-100 terminal-mode:bg-emerald-600/20 terminal-mode:border-emerald-600 terminal-mode:text-emerald-300 terminal-mode:hover:bg-emerald-600/30"
             >
-                <Printer size={20} />
-                Print
+                <Eye size={20} />
+                View {activeTab === 'resume' ? 'Resume' : 'CV'}
             </motion.button>
             </motion.div>
 
@@ -488,7 +530,50 @@
                 </motion.div>
             )}
             </AnimatePresence>
+            </motion.div>
         </div>
+
+        {/* Resume/CV View Modal */}
+        <AnimatePresence>
+            {showModal && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowModal(false)}
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                >
+                    {/* Modal */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="relative bg-primary rounded-lg shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
+                    >
+                        {/* Close Button */}
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowModal(false)}
+                            className="absolute top-4 right-4 p-2 hover:bg-secondary/50 rounded-full transition-colors light-mode:hover:bg-gray-100 terminal-mode:hover:bg-emerald-900 z-10 border-2 border-black/30 bg-black/20 backdrop-blur-sm"
+                        >
+                            <X size={24} className="text-foreground" />
+                        </motion.button>
+
+                        {/* PDF Viewer */}
+                        <div className="flex-1 overflow-auto bg-gray-900 w-full">
+                            <iframe
+                                src={activeTab === 'resume' ? resumeData.resumePdfUrl : resumeData.cvPdfUrl}
+                                className="w-full h-full border-none"
+                                title={activeTab === 'resume' ? 'Resume' : 'CV'}
+                            />
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
         </section>
     );
     };

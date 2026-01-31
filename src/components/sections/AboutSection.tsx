@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { FoldVertical, UnfoldVertical } from 'lucide-react';
 
 interface TimelineItem {
   year: string;
@@ -20,38 +21,59 @@ interface AboutSectionProps {
 
 export const AboutSection: React.FC<AboutSectionProps> = ({
   profileImages = ['/images/profile/profile.JPG'],
-    name = 'James Aries Gravamen Santiago',
-    title = 'Full-Stack Developer | Creative Coder | Design Planner',
-    bio = [
-        'I\'m passionate about building web applications that are not just functional but also beautiful and user-friendly. With a strong foundation in both frontend and backend technologies, I love tackling challenging problems and creating innovative solutions.',
-        'When I\'m not coding, you can find me contributing to open-source projects, learning new technologies, or sharing knowledge with the community. I believe in continuous learning and pushing the boundaries of what\'s possible on the web.',
-    ],
-    highlights = [
-        'Full-Stack Web Development',
-        'React & Next.js Expertise',
-        'Project Management & Documentation Skills',
-        'HTML, CSS, JavaScript Proficiency',
-        'UI/UX Design Principles',
-        'Open Source Contributor',
-    ],
-    timeline = [
-        {
-        year: '2023-Present',
-        title: 'Junior Developer',
-        description: 'Started journey in web development with a focus on frontend and backend technologies.',
-        },
-    ],
+  name = 'James Aries Gravamen Santiago',
+  
+  // Title: Specific to your goals
+  title = 'BSIT Senior | Lead Full-Stack Developer | Security & Research Enthusiast',
+  
+  // Bio: Paragraph 1 is Hard Skills/Capstone. Paragraph 2 is Soft Skills/Growth.
+  bio = [
+    'I am a motivated BSIT Senior (Class of 2026) with a passion for secure web architecture. My journey started with a strong foundation in Java, HTML/CSS, Bootstrap, PHP and MySQL, leading to my role as the Lead Developer for "Code Gaming," a gamified educational platform. I am now actively bridging the gap to modern frameworks, expanding my expertise into the React ecosystem (Next.js, TypeScript) while applying DevSecOps principles to everything I build.',
+    'Beyond the code, I am a research-driven learner with a library of 19+ certifications in AI, Data Science, and Cybersecurity. Whether managing logistics for a private estate or architecting a database, I bring reliability, financial discipline, and a "maximum effort" work ethic to every project.',
+  ],
+  
+  // Highlights: Matching your 19 Certificates
+  highlights = [
+    'Secure Web Architecture (DevSecOps)',
+    'Full-Stack Development (PHP/Next.js)',
+    'Agile Project Management (Scrum/Kanban)',
+    'Database Normalization & Logistics',
+    'AI & Data Science Fundamentals',
+    'UI/UX Prototyping (Figma/Canva)',
+  ],
+  
+  // Timeline: Accurate to your specific history
+  timeline = [
+    {
+      year: '2023 - Present',
+      title: 'The Certification Sprint',
+      description: 'Aggressively upskilled in AI, Data Science, and Cybersecurity, earning 15+ certifications to prepare for enterprise-level development.',
+    },
+    {
+      year: 'May 2025 - December 2025',
+      title: 'Lead Full-Stack Developer',
+      description: 'Architecting "An Educational Gaming System for Teaching Coding Skills and Programming Language for Pateros Technological College" Capstone Project: A secure, gamified educational system using PHP (OOP) and Normalized MySQL.',
+    },
+    {
+      year: 'June 2023 - July 2023',
+      title: 'Estate Logistics & Caretaker',
+      description: 'Managed security, inventory, and operations for a private facility, funding my own technical equipment through disciplined work.',
+    },
+  ],
     }) => {
+    // State for collapse/expand functionality
+    const [isExpanded, setIsExpanded] = useState(true);
+    
     // Image carousel state
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     // Auto-rotate images every 4 seconds
     useEffect(() => {
-      const interval = setInterval(() => {
+    const interval = setInterval(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % profileImages.length);
-      }, 4000);
+    }, 4000);
 
-      return () => clearInterval(interval);
+    return () => clearInterval(interval);
     }, [profileImages.length]);
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -83,19 +105,43 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
     };
 
     return (
-        <section id="about" className="py-24 px-4 bg-secondary/30">
+        <section id="about" className="py-24 px-4 bg-secondary/30 transition-all duration-300">
         <div className="max-w-6xl mx-auto">
-            {/* Section Title */}
+            {/* Section Header with Collapse Button */}
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-10 flex justify-between items-start"
             >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">About Me</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
+            <div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">About Me</h2>
+                <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
+            </div>
+
+            {/* Collapse Toggle Button */}
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+                aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
             </motion.div>
+
+            {/* Collapsible Content Area */}
+            <motion.div
+                initial={false}
+                animate={{ 
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+            >
 
             {/* Main Content Grid */}
             <motion.div
@@ -274,6 +320,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             >
                 Get in Touch
             </motion.a>
+            </motion.div>
             </motion.div>
         </div>
         </section>

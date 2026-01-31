@@ -1,6 +1,13 @@
     'use client';
 
-    import { motion } from 'framer-motion';
+    import { useState } from 'react';
+    import { motion, AnimatePresence } from 'framer-motion';
+    import { Palette, Cog, Wrench, Globe, Code, Database, Cloud, GitBranch, Box, Plug, RefreshCw, Laptop, Star, Zap, Target, MonitorPlay, Flag, FoldVertical, UnfoldVertical } from 'lucide-react';
+    import { SiFlutter, SiCisco, SiRuby, SiBootstrap, SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiNodedotjs, SiPython, SiPostgresql, SiMongodb, SiGithub, SiDocker, SiAmazon, SiVsco, SiJavascript, SiHtml5, SiCss3, SiFramer } from 'react-icons/si';
+    import { BiLogoJava } from "react-icons/bi";
+    import { VscVscode, VscTerminalPowershell } from "react-icons/vsc";
+    import { GrMysql } from "react-icons/gr";
+    import { FaPhp } from "react-icons/fa";
 
     interface Skill {
     name: string;
@@ -12,6 +19,7 @@
     interface SkillCategory {
     name: string;
     icon: string;
+    iconComponent: React.ComponentType<{ size: number }>;
     color: string;
     skills: Skill[];
     }
@@ -23,54 +31,70 @@
     export const SkillsSection: React.FC<SkillsSectionProps> = ({
     categories = [
         {
-        name: 'Frontend',
-        icon: '🎨',
+        name: 'Frontend & Performance',
+        icon: 'palette',
         color: 'from-blue-500 to-cyan-400',
+        iconComponent: Palette,
         skills: [
-            { name: 'React', level: 95, category: 'frontend', icon: '⚛️' },
-            { name: 'Next.js', level: 90, category: 'frontend', icon: '▲' },
-            { name: 'TypeScript', level: 88, category: 'frontend', icon: '📘' },
-            { name: 'Tailwind CSS', level: 92, category: 'frontend', icon: '🎯' },
-            { name: 'Framer Motion', level: 85, category: 'frontend', icon: '✨' },
+            { name: 'HTML', level: 80, category: 'frontend', icon: 'html' },
+            { name: 'React', level: 70, category: 'frontend', icon: 'react' },
+            { name: 'Next.js', level: 90, category: 'frontend', icon: 'nextjs' },
+            { name: 'JavaScript', level: 73, category: 'frontend', icon: 'javascript' },
+            { name: 'TypeScript', level: 88, category: 'frontend', icon: 'typescript' },
+            { name: 'Tailwind CSS', level: 92, category: 'frontend', icon: 'tailwindcss' },
+            { name: 'Framer Motion', level: 85, category: 'frontend', icon: 'framer' },
+            { name: 'CSS', level: 75, category: 'frontend', icon: 'css' },
+            { name: 'Bootstrap', level: 80, category: 'frontend', icon: 'bootstrap' },
         ],
         },
         {
-        name: 'Backend',
-        icon: '⚙️',
-        color: 'from-purple-500 to-pink-400',
+        name: 'Backend & Architecture',
+        icon: 'cog',
+        color: 'from-purple-500 to-yellow-400',
+        iconComponent: Cog,
         skills: [
-            { name: 'Node.js', level: 85, category: 'backend', icon: '🟩' },
-            { name: 'Python', level: 80, category: 'backend', icon: '🐍' },
-            { name: 'PostgreSQL', level: 82, category: 'backend', icon: '🗄️' },
-            { name: 'MongoDB', level: 78, category: 'backend', icon: '📊' },
-            { name: 'REST APIs', level: 88, category: 'backend', icon: '🔌' },
+            { name: 'Node.js', level: 85, category: 'backend', icon: 'nodejs' },
+            { name: 'Python', level: 61, category: 'backend', icon: 'python' },
+            { name: 'PHP', level: 70, category: 'backend', icon: 'php' },
+            { name: 'PostgreSQL', level: 60, category: 'backend', icon: 'postgresql' },
+            { name: 'MySQL', level: 72, category: 'backend', icon: 'mysql' },
+            { name: 'MongoDB', level: 60, category: 'backend', icon: 'mongodb' },
+            { name: 'REST APIs', level: 88, category: 'backend', icon: 'plug' },
         ],
         },
         {
         name: 'Tools & Platforms',
-        icon: '🛠️',
-        color: 'from-orange-500 to-red-400',
+        icon: 'wrench',
+        color: 'from-orange-500 to-indigo-400',
+        iconComponent: Wrench,
         skills: [
-            { name: 'Git & GitHub', level: 90, category: 'tools', icon: '🐙' },
-            { name: 'Docker', level: 75, category: 'tools', icon: '🐳' },
-            { name: 'AWS', level: 72, category: 'tools', icon: '☁️' },
-            { name: 'VS Code', level: 95, category: 'tools', icon: '💻' },
-            { name: 'CI/CD', level: 80, category: 'tools', icon: '🔄' },
+            { name: 'Git & GitHub', level: 90, category: 'tools', icon: 'github' },
+            { name: 'Docker', level: 75, category: 'tools', icon: 'docker' },
+            { name: 'AWS', level: 72, category: 'tools', icon: 'aws' },
+            { name: 'PowerShell', level: 70, category: 'tools', icon: 'powershell' },
+            { name: 'Cisco', level: 70, category: 'tools', icon: 'cisco' },
+            { name: 'VS Code', level: 95, category: 'tools', icon: 'vscode' },
+            { name: 'CI/CD', level: 80, category: 'tools', icon: 'refreshcw' },
         ],
         },
         {
         name: 'Languages',
-        icon: '🌐',
+        icon: 'globe',
         color: 'from-green-500 to-emerald-400',
+        iconComponent: Globe,
         skills: [
-            { name: 'JavaScript', level: 93, category: 'languages', icon: '✨' },
-            { name: 'HTML/CSS', level: 94, category: 'languages', icon: '🎨' },
-            { name: 'SQL', level: 85, category: 'languages', icon: '📝' },
-            { name: 'English', level: 90, category: 'languages', icon: '🇬🇧' },
+            { name: 'SQL', level: 85, category: 'languages', icon: 'sql' },
+            { name: 'Ruby', level: 60, category: 'languages', icon: 'ruby' },
+            { name: 'Python', level: 60, category: 'languages', icon: 'python' },
+            { name: 'Flutter', level: 60, category: 'languages', icon: 'flutter' },
+            { name: 'Java', level: 80, category: 'languages', icon: 'java' },
         ],
         },
     ],
     }) => {
+    // State for collapse/expand functionality
+    const [isExpanded, setIsExpanded] = useState(true);
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -91,6 +115,51 @@
         },
     };
 
+    const skillIconMap: Record<string, React.ReactNode> = {
+        zap: <Zap size={20} />,
+        palette: <Palette size={20} />,
+        sparkles: <Star size={20} />,
+        cpu: <Laptop size={20} />,
+        database: <Database size={20} />,
+        plug: <Plug size={20} />,
+        gitbranch: <GitBranch size={20} />,
+        box: <Box size={20} />,
+        cloud: <Cloud size={20} />,
+        refreshcw: <RefreshCw size={20} />,
+        flag: <Flag size={20} />,
+        // Programming Languages & Frameworks
+        react: <SiReact size={20} className="text-[#61DAFB]" />,
+        nextjs: <SiNextdotjs size={20} className="text-white" />,
+        typescript: <SiTypescript size={20} className="text-[#3178C6]" />,
+        tailwindcss: <SiTailwindcss size={20} className="text-[#06B6D4]" />,
+        framer: <SiFramer size={20} className="text-black dark:text-white" />,
+        nodejs: <SiNodedotjs size={20} className="text-[#339933]" />,
+        python: <SiPython size={20} className="text-[#3776AB]" />,
+        postgresql: <SiPostgresql size={20} className="text-[#336791]" />,
+        mongodb: <SiMongodb size={20} className="text-[#13AA52]" />,
+        github: <SiGithub size={20} className="text-white" />,
+        docker: <SiDocker size={20} className="text-[#2496ED]" />,
+        aws: <SiAmazon size={20} className="text-[#FF9900]" />,
+        vscode: <VscVscode size={20} className="text-[#007ACC]" />,
+        javascript: <SiJavascript size={20} className="text-[#F7DF1E]" />,
+        html: <SiHtml5 size={20} className="text-[#E34C26]" />,
+        css: <SiCss3 size={20} className="text-[#1572B6]" />,
+        sql: <Database size={20} />,
+        bootstrap: <SiBootstrap size={20} className="text-[#7952B3]" />,
+        java: <BiLogoJava size={20} className="text-[#007396]" />,
+        mysql: <GrMysql size={20} className="text-[#4479A1]" />,
+        php: <FaPhp size={20} className="text-[#777BB4]" />,
+        ruby: <SiRuby size={20} className="text-[#CC342D]" />,
+        flutter: <SiFlutter size={20} className="text-[#02569B]" />,
+        cisco: <SiCisco size={20} className="text-[#1BA0D7]" />,
+        powershell: <VscTerminalPowershell size={20} className="text-[#012456]" />,
+    };
+
+    const getSkillIcon = (iconKey: string | undefined) => {
+        if (!iconKey) return <Code size={20} />;
+        return skillIconMap[iconKey] || <Code size={20} />;
+    };
+
     const skillVariants = {
         hidden: { opacity: 0, x: -20 },
         visible: (index: number) => ({
@@ -104,22 +173,46 @@
     };
 
     return (
-        <section id="skills" className="py-24 px-4 bg-primary">
+        <section id="skills" className="py-24 px-4 bg-primary transition-all duration-300">
         <div className="max-w-6xl mx-auto">
-            {/* Section Title */}
+            {/* Section Header with Collapse Button */}
             <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-20"
+            className="mb-10 flex justify-between items-start"
             >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Skills & Expertise</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl">
-                A comprehensive overview of my technical skills and proficiency levels across various technologies and platforms.
-            </p>
+            <div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">Skills & Expertise</h2>
+                <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
+                <p className="text-gray-400 text-lg mt-6 max-w-2xl">
+                    A comprehensive overview of my technical skills and proficiency levels across various technologies and platforms.
+                </p>
+            </div>
+
+            {/* Collapse Toggle Button */}
+            <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+                aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+                {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
             </motion.div>
+
+            {/* Collapsible Content Area */}
+            <motion.div
+                initial={false}
+                animate={{ 
+                    height: isExpanded ? "auto" : 0,
+                    opacity: isExpanded ? 1 : 0
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+            >
 
             {/* Skills Categories Grid */}
             <motion.div
@@ -141,7 +234,9 @@
                     whileHover={{ scale: 1.05 }}
                     className="flex items-center gap-3 mb-4"
                     >
-                    <span className="text-4xl">{category.icon}</span>
+                    <div className="text-accent">
+                        {category.iconComponent && <category.iconComponent size={40} />}
+                    </div>
                     <div>
                         <h3 className="text-2xl font-bold text-white">{category.name}</h3>
                         <div className={`h-1 w-12 bg-gradient-to-r ${category.color} rounded-full`}></div>
@@ -175,8 +270,8 @@
                         >
                         {/* Skill Header */}
                         <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                            <span className="text-xl">{skill.icon}</span>
+                            <div className="flex items-center gap-2 text-accent">
+                            {getSkillIcon(skill.icon)}
                             <motion.span
                                 className="font-semibold text-white"
                                 whileHover={{ letterSpacing: '0.05em' }}
@@ -258,11 +353,9 @@
                                 transition={{
                                     delay: 0.6 + skillIndex * 0.05 + i * 0.05,
                                 }}
-                                className={`text-lg ${
-                                    i < Math.ceil(skill.level / 20) ? '⭐' : '☆'
-                                }`}
+                                className="text-accent"
                                 >
-                                {i < Math.ceil(skill.level / 20) ? '⭐' : '☆'}
+                                <Star size={18} fill={i < Math.ceil(skill.level / 20) ? 'currentColor' : 'none'} />
                                 </motion.div>
                             ))}
                             </div>
@@ -285,10 +378,10 @@
             >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 {[
-                { label: 'Years Experience', value: '5+' },
+                { label: 'Years Experience', value: '2+' },
                 { label: 'Skills Mastered', value: String(categories.reduce((acc, cat) => acc + cat.skills.length, 0)) },
                 { label: 'Technologies', value: '20+' },
-                { label: 'Expertise Level', value: 'Expert' },
+                { label: 'Expertise Level', value: 'Intermediate' },
                 ].map((stat, index) => (
                 <motion.div
                     key={stat.label}
@@ -326,6 +419,7 @@
             >
                 Get in Touch
             </motion.a>
+            </motion.div>
             </motion.div>
         </div>
         </section>

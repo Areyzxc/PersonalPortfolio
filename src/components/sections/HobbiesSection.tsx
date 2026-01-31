@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { hobbiesData, getUniqueCategories, type Hobby } from '../../data/hobbiesData';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Globe, Home, Heart, Palette, Users, Sprout, Activity, BookOpen, Cat, FoldVertical, UnfoldVertical } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -21,6 +21,7 @@ const itemVariants = {
 export const HobbiesSection = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedHobby, setExpandedHobby] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const categories = getUniqueCategories();
   const filteredHobbies =
@@ -28,12 +29,36 @@ export const HobbiesSection = () => {
       ? hobbiesData
       : hobbiesData.filter((hobby) => hobby.category === selectedCategory);
 
-  const categoryIcons: Record<string, string> = {
-    outdoor: '🌍',
-    indoor: '🏠',
-    wellness: '💪',
-    creative: '🎨',
-    social: '👥',
+  const categoryIcons = {
+    outdoor: Globe,
+    indoor: Home,
+    wellness: Heart,
+    creative: Palette,
+    social: Users,
+  };
+
+  // Icon render helpers
+  const getHobbyIcon = (iconType: string) => {
+    const iconMap: Record<string, React.FC<{ size: number }>> = {
+      sprout: Sprout,
+      activity: Activity,
+      book: BookOpen,
+      cat: Cat,
+    };
+    const IconComponent = iconMap[iconType];
+    return IconComponent ? <IconComponent size={28} /> : null;
+  };
+
+  const getCategoryIcon = (categoryIconType: string) => {
+    const iconMap: Record<string, React.FC<{ size: number }>> = {
+      globe: Globe,
+      home: Home,
+      heart: Heart,
+      palette: Palette,
+      users: Users,
+    };
+    const IconComponent = iconMap[categoryIconType];
+    return IconComponent ? <IconComponent size={14} /> : null;
   };
 
   const categoryLabels: Record<string, string> = {
@@ -55,23 +80,41 @@ export const HobbiesSection = () => {
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="flex justify-between items-start mb-10"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
-            My Hobbies & Interests
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
-            Exploring passions that fuel my creativity and keep me balanced
-          </p>
+          <div className="text-center flex-1">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-accent-light light-mode:text-blue-500 terminal-mode:text-emerald-300">
+              My Hobbies & Interests
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto light-mode:text-gray-600 terminal-mode:text-emerald-200">
+              Exploring passions that fuel my creativity and keep me balanced
+            </p>
+          </div>
+          <motion.button
+            onClick={() => setIsExpanded(!isExpanded)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-3 rounded-full border border-accent/30 text-accent hover:bg-accent/10 transition-colors duration-300 flex-shrink-0 ml-6 light-mode:border-blue-400 light-mode:text-blue-600 light-mode:hover:bg-blue-50 terminal-mode:border-emerald-500 terminal-mode:text-emerald-400 terminal-mode:hover:bg-emerald-900/50"
+            aria-label="Toggle hobbies section"
+          >
+            {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+          </motion.button>
         </motion.div>
 
-        {/* Category Filter */}
+        {/* Collapsible Content Container */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          initial={false}
+          animate={{ height: isExpanded ? "auto" : 0, opacity: isExpanded ? 1 : 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          style={{ overflow: "hidden" }}
         >
+          {/* Category Filter */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex flex-wrap justify-center gap-3 mb-12"
+          >
           <button
             onClick={() => setSelectedCategory(null)}
             className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
@@ -82,7 +125,9 @@ export const HobbiesSection = () => {
           >
             All Hobbies
           </button>
-          {categories.map((category) => (
+          {categories.map((category) => {
+            const IconComponent = categoryIcons[category];
+            return (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
@@ -92,10 +137,11 @@ export const HobbiesSection = () => {
                   : 'bg-secondary/50 text-foreground hover:bg-secondary border border-accent/20 light-mode:bg-gray-100 light-mode:hover:bg-gray-200 light-mode:border-blue-200 light-mode:text-gray-700 terminal-mode:bg-emerald-900/30 terminal-mode:hover:bg-emerald-900/50 terminal-mode:border-emerald-600/30'
               }`}
             >
-              <span>{categoryIcons[category]}</span>
+              <IconComponent size={18} />
               {categoryLabels[category]}
             </button>
-          ))}
+            );
+          })}
         </motion.div>
 
         {/* Hobbies Grid */}
@@ -139,22 +185,22 @@ export const HobbiesSection = () => {
                     {/* Icon & Title */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-4 flex-1">
-                        <span className="text-4xl flex-shrink-0">
-                          {hobby.icon}
-                        </span>
+                        <div className="text-accent flex-shrink-0 light-mode:text-blue-600 terminal-mode:text-emerald-400 mt-1">
+                          {getHobbyIcon(hobby.iconType)}
+                        </div>
                         <div>
                           <h3 className="text-xl font-bold mb-2 text-foreground light-mode:text-gray-900 terminal-mode:text-emerald-200">
                             {hobby.title}
                           </h3>
                           <span
                             className={`
-                              inline-block px-3 py-1 text-xs font-semibold rounded-full
+                              inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full
                               bg-gradient-to-r ${hobby.color}
                               text-white/90 mb-3
                               light-mode:text-white terminal-mode:text-white/90
                             `}
                           >
-                            {categoryIcons[hobby.category]}{' '}
+                            {getCategoryIcon(hobby.categoryIconType)}
                             {categoryLabels[hobby.category]}
                           </span>
                         </div>
@@ -217,18 +263,19 @@ export const HobbiesSection = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty State */}
-        {filteredHobbies.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <p className="text-gray-400 text-lg light-mode:text-gray-600 terminal-mode:text-emerald-300">
-              No hobbies found in this category. Try another filter!
-            </p>
-          </motion.div>
-        )}
+          {/* Empty State */}
+          {filteredHobbies.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16"
+            >
+              <p className="text-gray-400 text-lg light-mode:text-gray-600 terminal-mode:text-emerald-300">
+                No hobbies found in this category. Try another filter!
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </section>
   );

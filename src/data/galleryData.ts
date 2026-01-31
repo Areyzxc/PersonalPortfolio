@@ -41,6 +41,15 @@ export const galleryImages: GalleryImage[] = [
     category: 'Travel',
     date: '2024-12-29',
   },
+  {
+    id: '9',
+    src: '/images/gallery/Tree.jpg',
+    alt: 'Sky View',
+    title: 'Sky View',
+    description: 'An ethereal view of the sky through the trees during my travel adventure at random moments.',
+    category: 'Travel',
+    date: '2023-05-29',
+  },
 
   // Events Category: Add your event images here
   {
@@ -70,6 +79,24 @@ export const galleryImages: GalleryImage[] = [
     category: 'Events',
     date: '2023-08-29',
   },
+  {
+    id: '12',
+    src: '/images/gallery/Events-3.jpg',
+    alt: 'Lawson Food Trip',
+    title: 'Lawson Food Trip',
+    description: 'Me and my friends enjoying a food trip at Lawson after video shooting for our project.',
+    category: 'Events',
+    date: '2023-03-15',
+  },
+  {
+    id: '13',
+    src: '/images/gallery/Event-2.jpg',
+    alt: 'Capstone Bookbind Done',
+    title: 'Capstone Bookbind Done',
+    description: 'Finally done with our Capstone Project bookbind. It has been submitted already. Worth the effort!',
+    category: 'Events',
+    date: '2026-01-09',
+  },
 
   // Personal Category: Add your personal images here
   {
@@ -90,6 +117,43 @@ export const galleryImages: GalleryImage[] = [
     category: 'Personal',
     date: '2024-04-25',
   },
+  {
+    id: '10',
+    src: '/images/gallery/Personal-3.jpg',
+    alt: 'Caretaker Work',
+    title: 'Caretaker Work',
+    description: 'I took this one while doing my caretaker duties at a private estate. There are lots of cats around! and some fancy cars too.',
+    category: 'Personal',
+    date: '2023-07-17',
+  },
+  {
+    id: '11',
+    src: '/images/gallery/Personal-4.jpg',
+    alt: 'Personal Workspace',
+    title: 'Personal Workspace',
+    description: 'My personal workspace setup where I code, research, design, and manage projects/files. And to also watch anime/movies and listen to music during breaks.',
+    category: 'Personal',
+    date: '2023-08-19',
+  },
+  {
+    id: '14',
+    src: '/images/gallery/Personal-5.jpg',
+    alt: 'Me at the Wright Park',
+    title: 'Me at the Wright Park',
+    description: 'Enjoying a peaceful day at Wright Park, taking in the ethereal scenery and fresh air. Just standing there feels so calming and refreshing, wondering with my thoughts.',
+    category: 'Personal',
+    date: '2024-12-29',
+  },
+  {
+    id: '15',
+    src: '/images/gallery/Personal-6.jpg',
+    alt: 'A compass in hand',
+    title: 'A compass in hand',
+    description: 'I\'m just holding an antique compass, symbolizing direction and adventure in life. I wish I brought this during my travels and at home!',
+    category: 'Personal',
+    date: '2024-12-27',
+  }
+
 
   // 👇 ADD YOUR NEW IMAGES HERE 👇
   // Example of how to add a new image:

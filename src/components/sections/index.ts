@@ -11,3 +11,4 @@ export { CertificatesSection } from './CertificatesSection';
 export { HobbiesSection } from './HobbiesSection';
 export { GamesSection } from './GamesSection';
 export { ContactSection } from './ContactSection';
+export { TechStackMarquee } from './TechStackMarquee';

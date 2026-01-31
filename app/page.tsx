@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { HeroSection, AboutSection } from '@/src/components/sections';
+import { HeroSection, AboutSection, TechStackMarquee } from '@/src/components/sections';
 
 // Lazy load sections that are below the fold
 const SkillsSection = dynamic(() => import('@/src/components/sections').then(mod => ({ default: mod.SkillsSection })), {
@@ -25,14 +25,6 @@ const CertificatesSection = dynamic(() => import('@/src/components/sections').th
   loading: () => <div className="min-h-screen bg-primary" />,
 });
 
-const HobbiesSection = dynamic(() => import('@/src/components/sections').then(mod => ({ default: mod.HobbiesSection })), {
-  loading: () => <div className="min-h-screen bg-primary" />,
-});
-
-const GamesSection = dynamic(() => import('@/src/components/sections').then(mod => ({ default: mod.GamesSection })), {
-  loading: () => <div className="min-h-screen bg-primary" />,
-});
-
 const ContactSection = dynamic(() => import('@/src/components/sections').then(mod => ({ default: mod.ContactSection })), {
   loading: () => <div className="min-h-screen bg-primary" />,
 });
@@ -42,7 +34,26 @@ export default function Home() {
     <div className="min-h-screen">
       <HeroSection />
       
-      <AboutSection />
+      <AboutSection 
+      profileImages={[
+        '/images/profile/profile.JPG',
+        '/images/profile/profile2.JPG',
+        '/images/profile/profile3.JPG',
+        '/images/profile/profile4.JPG',
+        '/images/profile/profile5.JPG',
+        '/images/profile/profile6.JPG',
+        '/images/profile/profile7.JPG',
+        '/images/profile/profile8.JPG',
+        '/images/profile/profile9.JPG',
+        '/images/profile/profile10.JPG',
+        '/images/profile/profile11.JPG',
+        '/images/profile/profile12.JPG',
+        '/images/profile/profile13.JPG',
+        '/images/profile/profile14.JPG',
+        '/images/profile/profile15.JPG',
+        '/images/profile/profile16.JPG',
+      ]}
+      />
 
       {/* Projects Section - FULL FEATURED */}
       <ProjectsSection />
@@ -55,11 +66,10 @@ export default function Home() {
 
       <CertificatesSection />
 
-      <HobbiesSection />
-
-      <GamesSection />
-
       <ContactSection />
+
+      {/* Tech Stack Marquee - Infinite scrolling showcase of technologies */}
+      <TechStackMarquee />
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-secondary text-center text-gray-500">

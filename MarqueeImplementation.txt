@@ -1,0 +1,144 @@
+This is a fantastic idea. In modern web design, this is called an **"Infinite Marquee"** or **"Ticker."**
+
+It serves a specific purpose: **Social Proof & Transparency.** It tells visitors, "I didn't just use a template; I engineered this using these specific modern tools."
+
+Since you are using **Tailwind CSS**, we don't need heavy libraries like Splide or Swiper. We can achieve this with **Pure CSS Animation** (which is smoother and lighter).
+
+Here is how to implement the **"Built With" Marquee**.
+
+---
+
+### **Step 1: Update `tailwind.config.ts**`
+
+We need to define a custom "slide" animation that moves eternally. Open your Tailwind config and add this to the `extend` section:
+
+```typescript
+// tailwind.config.ts
+const config = {
+  theme: {
+    extend: {
+      animation: {
+        'marquee': 'marquee 25s linear infinite',
+        'marquee-reverse': 'marquee-reverse 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        'marquee-reverse': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
+      },
+    },
+  },
+}
+
+```
+
+---
+
+### **Step 2: Create the Component (`TechStackMarquee.tsx`)**
+
+This component uses a clever trick: we render the list of logos **twice**. This ensures that when the first list scrolls off-screen, the second one is right behind it, creating a seamless loop.
+
+```tsx
+'use client';
+
+import { motion } from 'framer-motion';
+import { SiNextdotjs, SiReact, SiTypescript, SiTailwindcss, SiFramer, SiVercel, SiGithub } from 'react-icons/si';
+import { LucideIcon, Code2 } from 'lucide-react'; // Using Code2 as a placeholder for Lucide since it doesn't have a brand icon
+
+const technologies = [
+  { name: 'Next.js', icon: SiNextdotjs, color: 'text-white' },
+  { name: 'React', icon: SiReact, color: 'text-[#61DAFB]' },
+  { name: 'TypeScript', icon: SiTypescript, color: 'text-[#3178C6]' },
+  { name: 'Tailwind CSS', icon: SiTailwindcss, color: 'text-[#06B6D4]' },
+  { name: 'Framer Motion', icon: SiFramer, color: 'text-white' },
+  { name: 'Lucide Icons', icon: Code2, color: 'text-orange-400' }, // Represents Lucide
+  { name: 'Vercel', icon: SiVercel, color: 'text-white' },
+  { name: 'GitHub', icon: SiGithub, color: 'text-white' },
+];
+
+export const TechStackMarquee = () => {
+  return (
+    <section className="py-10 bg-primary border-y border-white/5 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 mb-8 text-center">
+        <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">
+          Powered By Modern Tech
+        </p>
+        <h3 className="text-xl font-bold mt-2 text-white">
+          This portfolio is built with:
+        </h3>
+      </div>
+
+      {/* The Infinite Marquee Container */}
+      <div className="relative flex overflow-hidden group">
+        
+        {/* Gradient Masks for "Fade Out" effect on edges */}
+        <div className="absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-primary to-transparent z-10"></div>
+        <div className="absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-primary to-transparent z-10"></div>
+
+        {/* Inner Track - We duplicate the content to create the infinite loop */}
+        <div className="flex animate-marquee group-hover:[animation-play-state:paused] whitespace-nowrap">
+          
+          {/* First Set of Icons */}
+          {technologies.map((tech, index) => (
+            <div key={`tech-1-${index}`} className="flex items-center gap-3 mx-8 md:mx-12">
+              <tech.icon className={`text-3xl md:text-4xl ${tech.color}`} />
+              <span className="text-lg font-semibold text-gray-400 hidden md:block">
+                {tech.name}
+              </span>
+            </div>
+          ))}
+
+          {/* Duplicate Set (Immediate seamless loop) */}
+          {technologies.map((tech, index) => (
+            <div key={`tech-2-${index}`} className="flex items-center gap-3 mx-8 md:mx-12">
+              <tech.icon className={`text-3xl md:text-4xl ${tech.color}`} />
+              <span className="text-lg font-semibold text-gray-400 hidden md:block">
+                {tech.name}
+              </span>
+            </div>
+          ))}
+          
+        </div>
+      </div>
+    </section>
+  );
+};
+
+```
+
+---
+
+### **Step 3: Where to Place It**
+
+Since this is "meta" information (about the portfolio itself), the best placement is usually **just above the Footer**. It acts as a nice closing signature before the standard copyright info.
+
+**In `page.tsx`:**
+
+```tsx
+export default function Home() {
+  return (
+    <main>
+      <HeroSection />
+      <AboutSection />
+      {/* ... Projects, etc ... */}
+      
+      {/* Contact Section usually comes last, so place Marquee BEFORE or AFTER ContactSection */}
+      <TechStackMarquee /> 
+      
+      <Footer />
+    </main>
+  );
+}
+
+```
+
+### **Why this implementation rocks:**
+
+1. **`group-hover:paused`**: I added a feature where the slider **stops moving** when you hover over it. This allows users to read the text or look at a specific icon without it running away.
+2. **Gradient Masks**: The `bg-gradient-to-r` divs on the left and right create a "fade" effect, so icons don't just pop in and out of existence at the edges. It looks very premium.
+3. **Performance**: It uses GPU-accelerated CSS transforms (`translateX`), so it won't lag even on mobile phones.

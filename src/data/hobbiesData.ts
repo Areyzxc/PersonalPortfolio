@@ -1,8 +1,11 @@
+// Icon rendering is handled in HobbiesSection.tsx
+
 export interface Hobby {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  iconType: 'sprout' | 'activity' | 'book' | 'cat';
+  categoryIconType: 'globe' | 'home' | 'heart' | 'palette' | 'users';
   category: 'outdoor' | 'indoor' | 'wellness' | 'creative' | 'social';
   image?: string;
   color: string;
@@ -14,7 +17,8 @@ export const hobbiesData: Hobby[] = [
     id: '1',
     title: 'Gardening',
     description: 'Growing vegetables, herbs, and ornamental plants in my personal garden.',
-    icon: '🌱',
+    iconType: 'sprout',
+    categoryIconType: 'globe',
     category: 'outdoor',
     image: '/images/hobbies/gardening.jpg',
     color: 'from-green-400 to-emerald-500',
@@ -29,7 +33,8 @@ export const hobbiesData: Hobby[] = [
     id: '2',
     title: 'Badminton',
     description: 'Active sports player enjoying both casual and competitive badminton matches.',
-    icon: '🏸',
+    iconType: 'activity',
+    categoryIconType: 'globe',
     category: 'outdoor',
     image: '/images/hobbies/badminton.jpg',
     color: 'from-blue-400 to-cyan-500',
@@ -44,7 +49,8 @@ export const hobbiesData: Hobby[] = [
     id: '3',
     title: 'Reading Books',
     description: 'Passionate about reading various genres including sci-fi, fantasy, and self-improvement.',
-    icon: '📚',
+    iconType: 'book',
+    categoryIconType: 'home',
     category: 'indoor',
     image: '/images/hobbies/reading.jpg',
     color: 'from-amber-400 to-orange-500',
@@ -59,7 +65,8 @@ export const hobbiesData: Hobby[] = [
     id: '4',
     title: 'Playing with Cats',
     description: 'Enjoying quality time with my feline friends, interactive play and cuddling.',
-    icon: '🐱',
+    iconType: 'cat',
+    categoryIconType: 'users',
     category: 'social',
     image: '/images/hobbies/cats.jpg',
     color: 'from-pink-400 to-rose-500',

@@ -50,111 +50,160 @@ export interface Resume {
 }
 
 export const resumeData: Resume = {
-  // UPDATE HERE: Add your professional summary (brief career overview, 2-3 sentences)
+  // UPDATE HERE: Brief "Hero" Bio
+  // Added: "DevSecOps" and "18+ Certifications" to capture your new uploads.
   professionalSummary:
-    'Passionate Full-Stack Developer dedicated to creating innovative digital solutions. Experienced in modern web technologies with a strong foundation in computer science and continuous learning through certifications and bootcamp training.',
+    'Motivated BSIT Senior (Class of 2026) and Lead Full-Stack Developer specializing in secure web architecture and DevSecOps principles. Bridging the gap between robust backend systems (PHP/MySQL) and modern frontend ecosystems (Next.js, TypeScript), backed by a diverse portfolio of 18+ certifications in Cybersecurity, AI, and Agile Project Management.',
 
+  // UPDATE HERE: Detailed "About Me"
+  // Added: UI/UX Design (Figma), Agile/Scrum, and grouped your tech list for better readability.
   summary:
-    'Full-Stack Developer with 3+ years of experience building modern web applications. Specialized in React, Next.js, and Node.js with a passion for creating beautiful, functional, and innovative digital experiences. Strong background in full-stack development, cloud technologies, and open-source contributions.',
+    'Graduating IT student with a multi-disciplinary background spanning full-cycle web development, system administration, and digital design. Served as the Lead Developer for the capstone project titled "An Educational Game System for Teaching Coding Skills...", architecting a secure, web-based gamified platform using Object-Oriented PHP and normalized MySQL databases. Currently expanding technical expertise into the React ecosystem (Next.js, Tailwind) and exploring advanced engineering concepts in Cloud (Docker, PostgreSQL), Mobile (Flutter), and Machine Learning (TensorFlow). My development process is grounded in Agile methodologies (Scrum/Kanban) and UI/UX best practices (Figma), ensuring solutions are not only functional but user-centric and secure. Known for "maximum effort" reliability in unsupervised roles and a proactive, research-driven approach to solving complex technical challenges.',
 
   experiences: [
+    // ENTRY 1: Your Capstone (Crucial to show Developer Experience)
     {
-      company: 'Tech Innovations Inc.',
-      position: 'Senior Full-Stack Developer',
-      period: '2024 - Present',
+      company: 'Capstone Project (Pateros Technological College)',
+      position: 'Lead Full-Stack Developer',
+      period: 'May 2025 - Dec 2025',
       description:
-        'Led development of multiple high-impact projects and mentored junior developers. Architected scalable solutions for enterprise-level applications.',
+        'Architected and developed the capstone project titled: "An Educational Game System for Teaching Coding Skills and Programming Language for Pateros Technological College", a secure, web-based gamified educational system designed to teach programming concepts. Led the full development lifecycle from database normalization to backend logic implementation.',
       achievements: [
-        'Reduced application load time by 40% through optimization and code splitting',
-        'Mentored 3+ junior developers, improving team productivity by 25%',
-        'Implemented CI/CD pipeline reducing deployment time from 30min to 5min',
-        'Led successful migration from REST to GraphQL API architecture',
+        'Designed a normalized 3NF MySQL database ensuring data integrity for student records',
+        'Implemented Role-Based Access Control (RBAC) and password hashing for security',
+        'Configured local server environments (XAMPP/Apache) for stable testing',
+        'Led the integration of gamification features to improve user engagement',
       ],
       technologies: [
-        'React',
-        'Next.js',
-        'TypeScript',
-        'Node.js',
-        'PostgreSQL',
-        'Docker',
-        'AWS',
-      ],
-    },
-    {
-      company: 'Digital Solutions Co.',
-      position: 'Full-Stack Developer',
-      period: '2022 - 2024',
-      description:
-        'Developed and maintained multiple full-stack web applications for various clients. Specialized in frontend development with React and backend with Node.js.',
-      achievements: [
-        'Built 5+ production web applications serving 50,000+ monthly users',
-        'Implemented real-time features using WebSockets improving user engagement',
-        'Optimized database queries reducing query time by 60%',
-        'Collaborated with design team to implement responsive, pixel-perfect UIs',
-      ],
-      technologies: [
-        'React',
+        'PHP (OOP)',
+        'MySQL',
+        'HTML5/CSS3',
         'JavaScript',
-        'Node.js',
-        'MongoDB',
-        'Tailwind CSS',
+        'Bootstrap',
+        'XAMPP',
+        'Apache',
         'Git',
-        'Vercel',
+        'System Admin',
       ],
     },
+    // ENTRY 2: Your Estate Job (Shows Work Ethic & Logistics)
     {
-      company: 'StartUp Hub',
-      position: 'Junior Web Developer',
-      period: '2021 - 2022',
+      company: 'PGA Private Management',
+      position: 'Estate Logistics & Caretaker',
+      period: 'June 2023 - July 2023',
       description:
-        'Started career building dynamic web applications and learning modern development practices. Contributed to various frontend and backend projects.',
+        'Managed logistics, security, and maintenance for a multi-story private estate. Demonstrated high reliability and financial discipline in a completely unsupervised environment.',
       achievements: [
-        'Developed responsive web interfaces using React and CSS',
-        'Fixed 100+ bugs improving code quality and user experience',
-        'Participated in daily standups and sprint planning',
-        'Contributed to documentation and knowledge sharing',
+        'Managed inventory logistics and supply distribution across multiple facility hubs',
+        'Oversaw security and sanitation protocols, ensuring zero operational incidents',
+        'Leveraged contract earnings to self-fund high-performance technical equipment for development',
+        'Maintained strict operational schedules for property maintenance',
       ],
-      technologies: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js', 'MySQL'],
+      technologies: [
+        'Logistics Management',
+        'Inventory Control',
+        'Financial Planning',
+        'Operational Security',
+        'Resource Management',
+      ],
     },
   ],
 
   education: [
     {
-      school: 'University of Technology',
+      school: 'Pateros Technological College',
       degree: 'Bachelor of Science',
-      field: 'Computer Science',
-      year: '2021',
-      details: ['GPA: 3.8/4.0', 'Dean\'s List: 2019-2021', 'President of Web Dev Club'],
-    },
-    {
-      school: 'Online Code Academy',
-      degree: 'Full-Stack Web Development Bootcamp',
-      field: 'Web Development',
-      year: '2020',
-      details: ['400+ hours of intensive training', 'Capstone Project: E-commerce Platform'],
+      field: 'Information Technology',
+      year: '2022 - Present',
+      details: ['GPA: 1.33 (1st Year - 1st Sem)', 'Complete Attendance', 'Active Leader and Contributor'],
     },
   ],
 
   certifications: [
     {
       title: 'Cloud and DevOps Basics',
-      issuer: 'Department of Information and Communications Technology (DICT) - Cordillera Administrative Region (CAR), Philippines',
+      issuer: 'Department of Information and Communications Technology (DICT) - Cordillera Administrative Region (CAR)',
       date: 'November 2025',
     },
     {
-      title: 'MongoDB Developer Certification',
-      issuer: 'MongoDB University',
-      date: '2023',
+      title: 'Cloud Migration Strategies for Enterprises',
+      issuer: 'West Visayas State University',
+      date: 'October 2025',
     },
     {
-      title: 'Google Cloud Professional Data Engineer',
-      issuer: 'Google Cloud',
-      date: '2023',
+      title: 'Introduction to Data Science',
+      issuer: 'Department of Information and Communications Technology (DICT) - Cisco Networking Academy',
+      date: 'October 2025',
     },
     {
-      title: 'React Advanced Patterns',
-      issuer: 'Frontend Masters',
-      date: '2022',
+      title: 'AI in Cybersecurity for the Philippines\' Digital Future',
+      issuer: 'PECB Regional Webinars',
+      date: 'October 2025',
+    },
+    {
+      title: 'Hour of Code Training',
+      issuer: 'AI Ready ASEAN',
+      date: 'November 2025',
+    },
+    {
+      title: 'DevOps: Integrating Security into the Software Development Lifecycle',
+      issuer: 'West Visayas State University',
+      date: 'October 2025',
+    },
+    {
+      title: 'Introduction to Cybersecurity Awareness',
+      issuer: 'HP LIFE',
+      date: 'June 2025',
+    },
+    {
+      title: 'Agile Project Management',
+      issuer: 'HP LIFE',
+      date: 'July 2025',
+    },
+    {
+      title: 'Business Email',
+      issuer: 'HP LIFE',
+      date: 'June 2025',
+    },
+    {
+      title: 'Mental Health and Academic Well-being: Addressing Challenges Faced by Researchers',
+      issuer: 'Taguig City University - ISTREL',
+      date: 'April 2025',
+    },
+    {
+      title: 'Empowering Students through Research and Development',
+      issuer: 'Taguig City University - ISTREL',
+      date: 'September 2024',
+    },
+    {
+      title: 'Data Science and Artificial Intelligence: Trends, Applications, and Prospects',
+      issuer: 'Taguig City University - ISTREL',
+      date: 'August 2024',
+    },
+    {
+      title: 'Navigating the Waves of Change: The Role of Bussiness and Social Sciences in Today\'s Dynamic Environment',
+      issuer: 'Taguig City University - ISTREL',
+      date: 'August 2024',
+    },
+    {
+      title: 'Data Analtics: Trends of Tomorrow',
+      issuer: 'Pateros Technological College - JPCS',
+      date: 'August 2023',
+    },
+    {
+      title: 'Introduction to Artificial Intelligence',
+      issuer: 'Pateros Technological College - JPCS',
+      date: 'November 2023',
+    },
+    {
+      title: 'Cybersecurity Armor: Shielding Your Data in the Digital Age',
+      issuer: 'Pateros Technological College - JPCS',
+      date: 'October 2023',
+    },
+    {
+      title: 'Digital Literacy: In UI Wirefram & Strategy UI Mock-Up and Prototyping using Figma, Graphic Design using Photoshop',
+      issuer: 'Pateros Technological College - JPCS',
+      date: 'January 2023',
     },
   ],
 
@@ -162,7 +211,7 @@ export const resumeData: Resume = {
   languages: [
     {
       name: 'English',
-      proficiency: 'Fluent',
+      proficiency: 'Professional',
     },
     {
       name: 'Tagalog',
@@ -170,7 +219,7 @@ export const resumeData: Resume = {
     },
     {
       name: 'Japanese',
-      proficiency: 'Intermediate',
+      proficiency: 'Basic',
     },
   ],
 
@@ -178,32 +227,32 @@ export const resumeData: Resume = {
   awards: [
     {
       title: 'Top 3 Student in Class',
-      issuer: 'High School',
-      year: '2018',
+      issuer: 'Pateros National High School (Grade 10)',
+      year: '2019',
       description: 'Recognized for academic excellence and outstanding performance',
     },
     {
       title: 'Kindergarten Diploma',
-      issuer: 'Early Childhood Education Center',
-      year: '2005',
+      issuer: 'Sto. Rosario Elementary School',
+      year: '2009',
       description: 'Successfully completed kindergarten education',
     },
     {
       title: 'Elementary School Diploma',
-      issuer: 'Primary Education Institution',
-      year: '2011',
+      issuer: 'Pateros Elementary School',
+      year: '2015',
       description: 'Completed 6 years of elementary education',
     },
     {
       title: 'Junior High School Diploma',
-      issuer: 'Secondary Education School',
-      year: '2014',
-      description: 'Completed junior high school with honors',
+      issuer: 'Pateros National High School',
+      year: '2019',
+      description: 'Completed junior high school with honors (Top 3)',
     },
     {
       title: 'Senior High School Diploma',
-      issuer: 'Senior High School',
-      year: '2018',
+      issuer: 'Pateros National High School - Senior High',
+      year: '2021',
       description: 'Completed senior high school education with distinction',
     },
   ],

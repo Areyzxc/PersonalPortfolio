@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://areyzxc.github.io/PersonalPortfolio',
     title: 'James Aries G. Santiago - Personal Portfolio',
-    description: 'Full-Stack Developer | Creative Coder | Open Source Enthusiast',
+    description: 'Full-Stack Developer | DevSecOps Enthusiast | Design Planning | Security & Research Enthusiast',
     siteName: 'Personal Portfolio',
     images: [
       {
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'James Aries G. Santiago - Personal Portfolio',
-    description: 'Full-Stack Developer | Creative Coder | Open Source Enthusiast',
+    description: 'Full-Stack Developer | DevSecOps Enthusiast | Design Planning | Security & Research Enthusiast',
   },
 };
 
@@ -51,10 +51,10 @@ export default function RootLayout({
     title: 'Full-Stack Developer',
     url: 'https://areyzxc.github.io/PersonalPortfolio',
     image: '/images/profile/profile.JPG',
-    description: 'Full-Stack Developer | Creative Coder | Open Source Enthusiast',
+    description: 'BSIT Senior | Lead Full-Stack Developer | Security & Research Enthusiast',
     sameAs: ['https://github.com/Areyzxc'],
     jobTitle: 'Full-Stack Developer',
-    knowsAbout: ['Web Development', 'Full-Stack Development', 'UI/UX Design', 'Open Source'],
+    knowsAbout: ['Web Development', 'Full-Stack Development', 'UI/UX Design', 'Open Source', 'Cybersecurity', 'DevSecOps'],
   };
 
   return (
@@ -78,7 +78,7 @@ export default function RootLayout({
       <body className="bg-primary text-white overflow-x-hidden">
         <ThemeProvider>
           <Navigation />
-          <main>{children}</main>
+          <main className="pt-16">{children}</main>
         </ThemeProvider>
       </body>
     </html>
