@@ -21,7 +21,7 @@ export const gamesData: Game[] = [
     title: 'Geometry Dash',
     description:
       'An addictive rhythm-based platformer featuring fast-paced action and geometric shapes. Master challenging levels through precise timing and reflexes.',
-    artwork: '/images/games/geometry-dash.jpg',
+    artwork: '/images/profile/profile.JPG',
     status: 'currently-playing',
     rating: 5,
     platforms: ['PC', 'Mobile', 'Web'],

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* GitHub Pages base path */
+  basePath: '/PersonalPortfolio',
+  
   /* Image optimization */
   images: {
     formats: ['image/avif', 'image/webp'],

@@ -16,7 +16,7 @@ export const galleryImages: GalleryImage[] = [
   // Travel Category: Add your travel images here
   {
     id: '1',
-    src: '/images/gallery/garden.jpg',
+    src: '/images/gallery/Garden.jpg',
     alt: 'Garden',
     title: 'Garden Viewpoint',
     description: 'Breathtaking views from the garden with vibrant flowers and lush greenery.',
@@ -25,7 +25,7 @@ export const galleryImages: GalleryImage[] = [
   },
   {
     id: '2',
-    src: '/images/gallery/Travel2.jpg',
+    src: '/images/gallery/Travel2.JPG',
     alt: 'Baguio City View',
     title: 'High Above Baguio',
     description: 'Beautiful breeze from the pine trees in Baguio City.',
@@ -63,7 +63,7 @@ export const galleryImages: GalleryImage[] = [
   },
   {
     id: '4',
-    src: '/images/gallery/Capstone1.jpg',
+    src: '/images/gallery/Capstone1.JPG',
     alt: 'Capstone System Checking',
     title: 'Capstone System Checking',
     description: 'Checking the system during our Capstone Project event.',

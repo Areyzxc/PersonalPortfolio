@@ -20,7 +20,7 @@ export const hobbiesData: Hobby[] = [
     iconType: 'sprout',
     categoryIconType: 'globe',
     category: 'outdoor',
-    image: '/images/hobbies/gardening.jpg',
+    image: '/images/gallery/Garden.jpg',
     color: 'from-green-400 to-emerald-500',
     details: [
       'Growing organic vegetables year-round',
@@ -36,7 +36,7 @@ export const hobbiesData: Hobby[] = [
     iconType: 'activity',
     categoryIconType: 'globe',
     category: 'outdoor',
-    image: '/images/hobbies/badminton.jpg',
+    image: '/images/profile/profile10.jpg',
     color: 'from-blue-400 to-cyan-500',
     details: [
       'Playing 3-4 times per week',
@@ -52,7 +52,7 @@ export const hobbiesData: Hobby[] = [
     iconType: 'book',
     categoryIconType: 'home',
     category: 'indoor',
-    image: '/images/hobbies/reading.jpg',
+    image: '/images/profile/profile5.jpg',
     color: 'from-amber-400 to-orange-500',
     details: [
       'Reading 1-2 books per month',
@@ -68,7 +68,7 @@ export const hobbiesData: Hobby[] = [
     iconType: 'cat',
     categoryIconType: 'users',
     category: 'social',
-    image: '/images/hobbies/cats.jpg',
+    image: '/images/profile/profile6.jpg',
     color: 'from-pink-400 to-rose-500',
     details: [
       'Interactive play sessions daily',
