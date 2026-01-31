@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import { ThemeProvider } from '@/src/components/theme';
 import { Navigation } from '@/src/components/common';
 import { I18nProvider } from '@/src/components/providers/I18nProvider';
@@ -83,6 +84,7 @@ export default function RootLayout({
             <main className="pt-16">{children}</main>
           </ThemeProvider>
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );
