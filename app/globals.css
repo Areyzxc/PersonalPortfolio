@@ -60,8 +60,13 @@ html {
   background-color: var(--background);
   color: var(--foreground);
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* Add scroll padding to account for sticky navbar height (64px + 20px padding) */
-  scroll-padding-top: 84px;
+  /* ✅ Ensure smooth scrolling works */
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 body {

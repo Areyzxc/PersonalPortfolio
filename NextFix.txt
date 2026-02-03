@@ -1,0 +1,334 @@
+You're **absolutely right**! 🎯 That makes much more sense from a UX perspective. Let me fix both issues:
+
+---
+
+## ✅ **Issue #1: Modal Should Appear Where User Is (Not Scroll to Top)**
+
+You're correct - the modal should just **pop up in front of the user** without forcing them to scroll. The modal is already `position: fixed` and centered, so it SHOULD work perfectly without any scrolling!
+
+### **The Real Problem:**
+
+The issue is likely that when `overflow: hidden` is applied to the body, it might be causing layout shift. Let's fix this properly:
+
+### **Updated Modal Behavior (ALL Sections)**
+
+**GallerySection.tsx:**
+```tsx
+useEffect(() => {
+  if (selectedImage) {
+    // Save current scroll position
+    const scrollY = window.scrollY;
+    
+    // Lock body scroll but maintain position
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+  } else {
+    // Get the scroll position that was saved
+    const scrollY = document.body.style.top;
+    
+    // Restore body scroll
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    
+    // Restore scroll position
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+}, [selectedImage]);
+```
+
+**CertificatesSection.tsx:**
+```tsx
+useEffect(() => {
+  if (selectedCertificate) {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+  } else {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+}, [selectedCertificate]);
+```
+
+**ProjectsSection.tsx:**
+```tsx
+useEffect(() => {
+  if (expandedProject) {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+  } else {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+}, [expandedProject]);
+```
+
+**ResumeSection.tsx:**
+```tsx
+useEffect(() => {
+  if (showModal) {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+  } else {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  }
+}, [showModal]);
+```
+
+---
+
+## ✅ **Issue #2: Mobile Navigation Still Not Working**
+
+Let me give you a completely rewritten Navigation.tsx that WILL work:
+
+```tsx
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ArrowUp } from 'lucide-react';
+import { ThemeToggle } from '../theme';
+import { LanguageSelector } from './LanguageSelector';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const navItems = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Gallery', href: '#gallery' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Resume', href: '#resume' },
+  { label: 'Certificates', href: '#certificates' },
+  { label: 'Contact', href: '#contact' },
+];
+
+export function Navigation() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Track scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY || document.documentElement.scrollTop;
+      setShowBackToTop(currentScroll > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ✅ FIXED: Handle navigation clicks with proper offset
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Close mobile menu immediately
+    setIsOpen(false);
+    
+    // Get target section
+    const targetId = href.substring(1); // NOTE: Remove the #
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      // Calculate offset (navbar height)
+      const navbarHeight = 80; // Increased for better visibility
+      
+      // Get element position
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+
+      // Smooth scroll to position
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <>
+      <nav className="sticky top-0 left-0 right-0 w-full z-50 bg-primary/80 backdrop-blur-md border-b border-secondary/50 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl font-bold bg-gradient-to-r text-white from-accent to-accent-light bg-clip-text text-transparent cursor-pointer"
+              onClick={scrollToTop}
+            >
+              Areyszxc../Portfolio
+            </motion.div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex gap-6 items-center">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="text-gray-300 hover:text-accent transition-colors text-sm font-medium cursor-pointer"
+                >
+                  {item.label}
+                </a>
+              ))}
+
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center gap-4">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-gray-300 hover:text-accent p-2"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation Dropdown */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="md:hidden overflow-hidden bg-primary/95 backdrop-blur-xl border-t border-secondary/50"
+              >
+                <div className="px-4 py-4 space-y-3">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className="block px-4 py-3 text-gray-300 hover:text-accent hover:bg-secondary/50 rounded-lg transition-colors font-medium cursor-pointer"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                  <div className="pt-4 border-t border-secondary/30">
+                    <LanguageSelector isMobile={true} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </nav>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-accent text-white shadow-lg shadow-accent/40 border border-accent/50 backdrop-blur-sm hover:bg-accent-light transition-all"
+            aria-label="Back to top"
+          >
+            <ArrowUp size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+```
+
+---
+
+## 🎯 **Alternative: If Navigation Still Doesn't Work**
+
+If the above still doesn't work, there might be a CSS issue preventing the scroll. Add this to your `globals.css`:
+
+```css
+/* ✅ Ensure smooth scrolling works */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Ensure sections are scrollable targets */
+section {
+  scroll-margin-top: 80px;
+}
+
+/* Remove any conflicting overflow hidden */
+#__next {
+  overflow: visible !important;
+}
+```
+
+---
+
+## 📋 **Summary of Fixes**
+
+### **Modal Behavior:**
+- ✅ Modal appears **exactly where user is** (no scrolling!)
+- ✅ Background content stays in place
+- ✅ Scroll is locked without layout shift
+- ✅ When closing, user returns to exact same position
+
+### **Mobile Navigation:**
+- ✅ Clicks are properly handled with `preventDefault()`
+- ✅ Menu closes immediately when link clicked
+- ✅ Smooth scroll to section with navbar offset
+- ✅ Section appears perfectly below navbar
+
+---
+
+## 🧪 **Debugging Steps if Nav Still Doesn't Work:**
+
+1. **Check if sections have correct IDs:**
+   ```tsx
+   <section id="gallery">  // ✅ Correct
+   <section id="Gallery">  // ❌ Wrong (case mismatch)
+   ```
+
+2. **Check browser console** for errors when clicking nav links
+
+3. **Test with this simple version** - add to a nav link temporarily:
+   ```tsx
+   onClick={(e) => {
+     e.preventDefault();
+     console.log('Clicked!', item.href);
+     document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
+   }}
+   ```
+
+4. **Make sure all sections in page.tsx** have proper IDs matching the nav items
+
+Let me know if either issue persists and I'll dig deeper! 🚀

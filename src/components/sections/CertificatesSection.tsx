@@ -13,25 +13,15 @@ export const CertificatesSection: React.FC = () => {
   const categories = useMemo(() => getUniqueCertificateCategories(), []);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // ✅ FIXED: Proper modal behavior
-useEffect(() => {
-  if (selectedCertificate) {
-    // 1. Disable body scroll to prevent background scrolling
-    document.body.style.overflow = 'hidden';
-    
-    // 2. NO auto-scrolling - let modal appear where user clicked
-    // The modal is position: fixed and centered, so no scroll needed
-    
-  } else {
-    // 3. Re-enable body scroll when modal closes
-    document.body.style.overflow = 'unset';
-  }
-
-  // 4. Cleanup function
-  return () => {
-    document.body.style.overflow = 'unset';
-  };
-}, [selectedCertificate]);
+  // Auto-scroll to modal when certificate is selected
+  useEffect(() => {
+    if (selectedCertificate) {
+      const certificatesSection = document.getElementById('certificates');
+      if (certificatesSection) {
+        certificatesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [selectedCertificate]);
 
   const filteredCertificates = useMemo(() => {
     return selectedCategory

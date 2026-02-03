@@ -36,7 +36,13 @@ export const useGitHubStats = (repoPath: string | undefined): GitHubStats => {
         });
 
         if (!response.ok) {
-          throw new Error(`GitHub API error: ${response.status}`);
+          // Handle 404 and other errors gracefully
+          setStats((prev) => ({
+            ...prev,
+            loading: false,
+            error: response.status === 404 ? 'Repository not found' : `GitHub API error: ${response.status}`,
+          }));
+          return;
         }
 
         const data = await response.json();

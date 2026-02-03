@@ -20,16 +20,14 @@
     // Get unique categories
     const categories = Array.from(new Set(images.map((img) => img.category)));
 
-    // Disable body scroll when modal opens, re-enable when closes
+    // Auto-scroll to modal when image is selected
     useEffect(() => {
         if (selectedImage) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
+            const gallerySection = document.getElementById('gallery');
+            if (gallerySection) {
+                gallerySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
     }, [selectedImage]);
 
     // Filter images by category
