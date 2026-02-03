@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ArrowDown, Cpu, Wifi, Flame } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useScrollPosition } from '../../lib/hooks/useScrollPosition';
 import { GiAries } from "react-icons/gi";
 // --- 3D COMPONENT: The Wireframe Globe with Mouse Tracking ---
@@ -57,6 +58,7 @@ const CrosshairCorner = ({ className }: { className: string }) => (
 
 // --- MAIN COMPONENT ---
 export function HeroSection() {
+  const { t } = useTranslation('home');
   const scrollPosition = useScrollPosition();
   const opacity = Math.max(0, 1 - scrollPosition / 700);
   

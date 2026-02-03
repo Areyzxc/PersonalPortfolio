@@ -23,14 +23,16 @@ export const ProjectsSection: React.FC = () => {
   const technologies = useMemo(() => getUniqueTechnologies(), []);
   const years = useMemo(() => getUniqueYears(), []);
 
-  // Auto-scroll to modal when project is selected
+  // Disable body scroll when modal opens, re-enable when closes
   useEffect(() => {
     if (expandedProject) {
-      const projectsSection = document.getElementById('projects');
-      if (projectsSection) {
-        projectsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [expandedProject]);
 
   // Apply filters and sort

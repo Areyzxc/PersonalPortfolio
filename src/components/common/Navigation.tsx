@@ -46,12 +46,32 @@ export function Navigation() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handle anchor navigation with navbar offset
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace('#', '');
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      // Calculate navbar height and add extra padding
+      const navbarHeight = 64; // h-16 = 64px
+      const scrollOffset = 20; // Extra padding for visual comfort
+      const elementPosition = targetElement.offsetTop - navbarHeight - scrollOffset;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth',
+      });
+    }
+    
+    // Close mobile menu after navigation
+    setIsOpen(false);
+  };
+
   return (
     <>
-      {/* FIX 1: Changed 'sticky' to 'fixed'. 
-        'fixed' ensures it stays on screen regardless of parent overflow settings.
-      */}
-      <nav className="fixed top-0 left-0 right-0 w-full z-50 bg-primary/80 backdrop-blur-md border-b border-secondary/50 transition-all duration-300">
+      {/* Navbar with sticky positioning - sticks only when scrolling past top */}
+      <nav className="sticky top-0 left-0 right-0 w-full z-50 bg-primary/80 backdrop-blur-md border-b border-secondary/50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -70,6 +90,7 @@ export function Navigation() {
                 <a
                   key={item.label}
                   href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className="text-gray-300 hover:text-accent transition-colors text-sm font-medium"
                 >
                   {item.label}
@@ -107,8 +128,8 @@ export function Navigation() {
                     <a
                       key={item.label}
                       href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
                       className="block px-4 py-3 text-gray-300 hover:text-accent hover:bg-secondary/50 rounded-lg transition-colors font-medium"
-                      onClick={() => setIsOpen(false)}
                     >
                       {item.label}
                     </a>

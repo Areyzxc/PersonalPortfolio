@@ -14,14 +14,16 @@
     const [expandedAward, setExpandedAward] = useState<number | null>(null);
     const [isExpanded, setIsExpanded] = useState(true);
 
-    // Auto-scroll to modal when opened
+    // Disable body scroll when modal opens, re-enable when closes
     useEffect(() => {
         if (showModal) {
-            const resumeSection = document.getElementById('resume');
-            if (resumeSection) {
-                resumeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
         }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
     }, [showModal]);
 
     const containerVariants = {
