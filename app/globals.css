@@ -1,11 +1,6 @@
 @import "tailwindcss";
 @import "./light-mode.css";
 
-/* Performance: Use CSS containment for better rendering */
-* {
-  contain: layout style paint;
-}
-
 /* Default Dark Theme */
 :root {
   --background: #0f172a;

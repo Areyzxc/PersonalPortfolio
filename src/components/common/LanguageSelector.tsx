@@ -1,10 +1,9 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'react-i18next';
 
 interface LanguageOption {
   code: string;
@@ -24,26 +23,28 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
-  const router = useRouter();
-  const pathname = usePathname();
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Hydration protection
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   const handleLanguageChange = (languageCode: string) => {
-    // Remove current locale from pathname
-    const pathWithoutLocale = pathname.replace(/^\/(en|es|fr|ja)(?:\/|$)/, '/');
-    
-    // Navigate to the same path with new locale
-    if (languageCode === 'en') {
-      router.push(pathWithoutLocale || '/');
-    } else {
-      router.push(`/${languageCode}${pathWithoutLocale || '/'}`);
-    }
-    
+    i18n.changeLanguage(languageCode);
+    // Persist language preference to localStorage
+    localStorage.setItem('preferredLanguage', languageCode);
     setIsOpen(false);
   };
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
 
   // Mobile dropdown style
   if (isMobile) {
