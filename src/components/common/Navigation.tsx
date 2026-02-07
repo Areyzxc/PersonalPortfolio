@@ -46,31 +46,36 @@ export function Navigation() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // ✅ FIXED: Handle anchor navigation with navbar offset
+  // ✅ MOBILE-OPTIMIZED: Works on both desktop and mobile with race condition fix
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    e.stopPropagation(); // ✅ Prevent event bubbling
+    e.stopPropagation();
     
     const targetId = href.replace('#', '');
     const targetElement = document.getElementById(targetId);
     
     if (targetElement) {
-      // ✅ Use getBoundingClientRect() for accurate positioning with sticky nav
-      const navbarHeight = 80; // Slightly more padding for better visibility
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+      // ✅ Close menu FIRST on mobile for better performance
+      setIsOpen(false);
       
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-      
-      // ✅ Close mobile menu after a small delay to show the animation
+      // ✅ Small delay to let menu close animation complete
       setTimeout(() => {
-        setIsOpen(false);
-      }, 100);
+        const navbarHeight = 80;
+        
+        // ✅ Get FRESH position after menu closes (fixes race condition)
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+        
+        // ✅ Force scroll with requestAnimationFrame for mobile compatibility
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+        });
+      }, 150); // Wait for menu close animation to complete
+      
     } else {
-      // Fallback: Close menu immediately if target not found
       setIsOpen(false);
     }
   };

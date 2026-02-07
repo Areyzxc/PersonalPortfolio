@@ -12,7 +12,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T)
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
+      // Silently fail on quota errors (private browsing, storage full, etc)
+      if (error instanceof Error && !error.name?.includes('QuotaExceeded')) {
+        console.warn(`Warning reading localStorage key "${key}":`, error);
+      }
     }
   }, [key]);
 
@@ -24,7 +27,16 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T)
           window.localStorage?.setItem(key, JSON.stringify(value));
         }
       } catch (error) {
-        console.error(`Error setting localStorage key "${key}":`, error);
+        // ✅ Handle quota exceeded errors gracefully
+        if (error instanceof Error) {
+          if (error.name === 'QuotaExceededError' || error.message?.includes('QuotaExceeded')) {
+            // Silently fail - still keep value in memory, just don't persist
+            console.debug(`localStorage quota exceeded for key "${key}". Value kept in memory.`);
+            return;
+          }
+        }
+        // Log other errors as warnings only
+        console.warn(`Warning setting localStorage key "${key}":`, error);
       }
     },
     [key]
