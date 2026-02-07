@@ -1,174 +1,250 @@
-Looking at the HTML structure, I can see:
+Looking at your code, I can see the issue. The handleNavClick function uses offsetTop which might not work correctly with sticky positioning. Let me provide the fix:
 
-HTML
-<div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="margin: 0px; opacity: 1;">
-The modal has:
-
-✅ position: fixed
-✅ inset-0
-✅ High z-index z-[9999]
-But I notice something critical - look at the parent elements:
-
-HTML
-<div class="relative bg-primary rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950" style="opacity: 1; transform: none;">
-There's a transform: none; on the inner modal container! This is coming from Framer Motion.
-
-Also, I can see in the Computed styles on the right:
-
-border-bottom-color, border-image-outset, etc. - all these computed styles
-The problem is that Framer Motion's animations are adding transform properties which are breaking the fixed positioning!
-
-✅ The Real Fix
-The issue is that Framer Motion's motion.div is applying transforms during animation, which creates a new containing block.
-
-Here's the solution - we need to separate the Portal wrapper from the animated content:
-
-Updated GallerySection.tsx (Modal Part Only)
-Replace your modal code with this:
+🔧 The Problem:
+Line 62:
 
 TSX
-{/* ✅ FIXED: Modal in Portal with proper animation separation */}
-{selectedImage && (
-  <Portal>
-    {/* Overlay - no transform animations */}
-    <div
-      onClick={() => setSelectedImage(null)}
-      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-      style={{ 
-        zIndex: 99999,
-        margin: 0,
-        animation: 'fadeIn 0.2s ease-out'
-      }}
-    >
-      {/* Content - animations happen here, INSIDE the fixed container */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-        className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setSelectedImage(null)}
-          className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
-        >
-          <X size={24} />
-        </motion.button>
+const elementPosition = targetElement.offsetTop - navbarHeight - scrollOffset;
+offsetTop gives the position relative to the offsetParent, which might not be accurate when you have sticky positioning and complex layouts.
 
-        <div className="relative flex-1 overflow-hidden bg-black">
-          <motion.img
-            key={selectedImage.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            src={selectedImage.src}
-            alt={selectedImage.alt}
-            className="w-full h-full object-contain"
-          />
+✅ The Fix:
+Replace the handleNavClick function with this corrected version:
 
-          <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
-            {currentIndex + 1} / {filteredImages.length}
-          </div>
+TSX
+// ✅ FIXED: Handle anchor navigation with navbar offset
+const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  e.preventDefault();
+  e.stopPropagation(); // ✅ Prevent event bubbling
+  
+  const targetId = href.replace('#', '');
+  const targetElement = document.getElementById(targetId);
+  
+  if (targetElement) {
+    // ✅ Use getBoundingClientRect() for accurate positioning
+    const navbarHeight = 80; // Slightly more padding for better visibility
+    const elementPosition = targetElement.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    });
+    
+    // Close mobile menu after a small delay to show the animation
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 100);
+  } else {
+    // Fallback: Close menu immediately if target not found
+    setIsOpen(false);
+  }
+};
+📋 Complete Updated Navigation.tsx:
+Here's the full corrected version:
 
-          {filteredImages.length > 1 && (
-            <>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrevious();
-                }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+TSX
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Menu, X, ArrowUp } from 'lucide-react';
+import { ThemeToggle } from '../theme';
+import { LanguageSelector } from './LanguageSelector';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const navItems = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Gallery', href: '#gallery' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Resume', href: '#resume' },
+  { label: 'Certificates', href: '#certificates' },
+  { label: 'Contact', href: '#contact' },
+];
+
+export function Navigation() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Enable smooth scrolling behavior
+  React.useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+    return () => {
+      document.documentElement.style.scrollBehavior = 'auto';
+    };
+  }, []);
+
+  // Track scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY || document.documentElement.scrollTop;
+      setShowBackToTop(currentScroll > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ✅ FIXED: Handle anchor navigation with navbar offset
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const targetId = href.replace('#', '');
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      // Use getBoundingClientRect() for accurate current position
+      const navbarHeight = 80;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+      
+      // Close mobile menu after navigation starts
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 100);
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <nav className="sticky top-0 left-0 right-0 w-full z-50 bg-primary/80 backdrop-blur-md border-b border-secondary/50 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl font-bold bg-gradient-to-r text-white from-accent to-accent-light bg-clip-text text-transparent cursor-pointer"
+              onClick={scrollToTop}
+            >
+              Areyszxc../Portfolio
+            </motion.div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex gap-6 items-center">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="text-gray-300 hover:text-accent transition-colors text-sm font-medium"
+                >
+                  {item.label}
+                </a>
+              ))}
+
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center gap-4">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-gray-300 hover:text-accent p-2"
+                aria-label="Toggle menu"
               >
-                <ChevronLeft size={24} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleNext();
-                }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
-              >
-                <ChevronRight size={24} />
-              </motion.button>
-            </>
-          )}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-6 border-t border-accent/20"
-        >
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
-              <p className="text-gray-400 mb-4">{selectedImage.description}</p>
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center">
-            <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
-              {selectedImage.category}
-            </span>
-            <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-          </div>
-        </motion.div>
-      </motion.div>
-    </div>
-  </Portal>
-)}
-Add CSS Animation
-Add this to your globals.css:
+          {/* Mobile Navigation Dropdown */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="md:hidden overflow-hidden bg-primary/95 backdrop-blur-xl border-t border-secondary/50"
+              >
+                <div className="px-4 py-4 space-y-3">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className="block px-4 py-3 text-gray-300 hover:text-accent hover:bg-secondary/50 rounded-lg transition-colors font-medium"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                  <div className="pt-4 border-t border-secondary/30">
+                    <LanguageSelector isMobile={true} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </nav>
 
-CSS
-/* app/globals.css */
-
-/* ... existing styles ... */
-
-/* ✅ Add this at the bottom */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.5, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-accent text-white shadow-lg shadow-accent/40 border border-accent/50 backdrop-blur-sm hover:bg-accent-light transition-all"
+            aria-label="Back to top"
+          >
+            <ArrowUp size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </>
+  );
 }
 🎯 Key Changes:
-Outer div is plain HTML (not motion.div) - This keeps position: fixed working
-Inner motion.div handles animations - Transforms happen INSIDE the fixed container
-Removed AnimatePresence from wrapping the overlay - AnimatePresence can add extra wrappers
-Simple CSS animation for fade-in instead of Framer Motion on the overlay
-📋 Alternative: Use AnimatePresence Correctly
-If you want to keep AnimatePresence for exit animations, wrap it around the Portal content, not the Portal itself:
-
+Line 51: Added e.stopPropagation() to prevent event bubbling
+Line 58: Changed from offsetTop to getBoundingClientRect().top for accurate positioning
+Line 59: Calculate offset position using current scroll position
+Line 57: Increased navbar height to 80px for better visibility
+Line 65-67: Added setTimeout with 100ms delay before closing menu (smoother UX)
+🧪 How This Works:
+Old Method (offsetTop):
 TSX
-<Portal>
-  <AnimatePresence>
-    {selectedImage && (
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          // ... rest of modal
-        </motion.div>
-      </div>
-    )}
-  </AnimatePresence>
-</Portal>
-🧪 Test This:
-Apply the changes
-Hard refresh (Ctrl+Shift+R)
-Scroll to Certificates section (bottom)
-Click a certificate
-Modal should appear RIGHT IN FRONT OF YOU at the bottom
-Open DevTools and check - the fixed div should NOT have any transform property
-This should finally work! The key is keeping the fixed element free from any transform properties, even from Framer Motion! 🚀
+const elementPosition = targetElement.offsetTop - navbarHeight - scrollOffset;
+// ❌ offsetTop is relative to offsetParent, not viewport
+New Method (getBoundingClientRect):
+TSX
+const elementPosition = targetElement.getBoundingClientRect().top;
+const offsetPosition = elementPosition + window.scrollY - navbarHeight;
+// ✅ getBoundingClientRect().top gives position relative to viewport
+// ✅ Add window.scrollY to get absolute position
+// ✅ Subtract navbar height for offset
+📊 What This Fixes:
+Issue	Before	After
+Click "Gallery" on mobile	Doesn't scroll / Wrong position	✅ Scrolls to Gallery with navbar offset
+Click "Certificates"	Doesn't scroll / Wrong position	✅ Scrolls to Certificates perfectly
+Menu after click	Stays open	✅ Closes automatically
+Section visibility	Hidden under navbar	✅ Fully visible below navbar
+✅ Testing Checklist:
+After applying this fix:
+
+ Open mobile menu (hamburger icon)
+ Click "Gallery" → Should scroll to Gallery, menu closes
+ Open menu again
+ Click "Certificates" → Should scroll to Certificates, menu closes
+ Open menu again
+ Click "Contact" → Should scroll to Contact, menu closes
+ All sections should be visible (not hidden under navbar)
+This should fix your mobile navigation completely! 🚀✨

@@ -46,26 +46,33 @@ export function Navigation() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle anchor navigation with navbar offset
+  // ✅ FIXED: Handle anchor navigation with navbar offset
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    e.stopPropagation(); // ✅ Prevent event bubbling
+    
     const targetId = href.replace('#', '');
     const targetElement = document.getElementById(targetId);
     
     if (targetElement) {
-      // Calculate navbar height and add extra padding
-      const navbarHeight = 64; // h-16 = 64px
-      const scrollOffset = 20; // Extra padding for visual comfort
-      const elementPosition = targetElement.offsetTop - navbarHeight - scrollOffset;
+      // ✅ Use getBoundingClientRect() for accurate positioning with sticky nav
+      const navbarHeight = 80; // Slightly more padding for better visibility
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
       
       window.scrollTo({
-        top: elementPosition,
+        top: offsetPosition,
         behavior: 'smooth',
       });
+      
+      // ✅ Close mobile menu after a small delay to show the animation
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 100);
+    } else {
+      // Fallback: Close menu immediately if target not found
+      setIsOpen(false);
     }
-    
-    // Close mobile menu after navigation
-    setIsOpen(false);
   };
 
   return (
