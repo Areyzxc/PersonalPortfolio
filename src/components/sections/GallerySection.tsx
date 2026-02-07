@@ -4,6 +4,7 @@
     import { motion, AnimatePresence } from 'framer-motion';
     import { X, ChevronLeft, ChevronRight, FoldVertical, UnfoldVertical } from 'lucide-react';
     import { galleryImages, GalleryImage } from '../../data/galleryData';
+    import { Portal } from '../common/Portal';
 
     interface GallerySectionProps {
     images?: GalleryImage[];
@@ -19,15 +20,17 @@
 
     // Get unique categories
     const categories = Array.from(new Set(images.map((img) => img.category)));
-
-    // Auto-scroll to modal when image is selected
+    // Lock body scroll when modal opens
     useEffect(() => {
         if (selectedImage) {
-            const gallerySection = document.getElementById('gallery');
-            if (gallerySection) {
-                gallerySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
+
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [selectedImage]);
 
     // Filter images by category
@@ -227,102 +230,105 @@
             </motion.div>
         </div>
 
-        {/* Lightbox Modal */}
+        {/* Lightbox Modal with Portal */}
         <AnimatePresence>
             {selectedImage && (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSelectedImage(null)}
-                className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            >
-                <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                onClick={(e) => e.stopPropagation()}
-                className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
-                >
-                {/* Close Button */}
-                <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setSelectedImage(null)}
-                    className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
-                >
-                    <X size={24} />
-                </motion.button>
-
-                {/* Main Image */}
-                <div className="relative flex-1 overflow-hidden bg-black">
-                    <motion.img
-                    key={selectedImage.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
-                    className="w-full h-full object-contain"
-                    />
-
-                    {/* Image Counter */}
-                    <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
-                    {currentIndex + 1} / {filteredImages.length}
-                    </div>
-
-                    {/* Navigation Buttons */}
-                    {filteredImages.length > 1 && (
-                    <>
-                        <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handlePrevious();
-                        }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+                <Portal>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedImage(null)}
+                        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+                        style={{ margin: 0 }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
                         >
-                        <ChevronLeft size={24} />
-                        </motion.button>
-                        <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleNext();
-                        }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
-                        >
-                        <ChevronRight size={24} />
-                        </motion.button>
-                    </>
-                    )}
-                </div>
+                            {/* Close Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
+                            >
+                                <X size={24} />
+                            </motion.button>
 
-                {/* Image Details */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 border-t border-accent/20"
-                >
-                    <div className="flex justify-between items-start mb-3">
-                    <div>
-                        <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
-                        <p className="text-gray-400 mb-4">{selectedImage.description}</p>
-                    </div>
-                    </div>
+                            {/* Main Image */}
+                            <div className="relative flex-1 overflow-hidden bg-black">
+                                <motion.img
+                                    key={selectedImage.id}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    src={selectedImage.src}
+                                    alt={selectedImage.alt}
+                                    className="w-full h-full object-contain"
+                                />
 
-                    <div className="flex flex-wrap gap-4 items-center">
-                    <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
-                        {selectedImage.category}
-                    </span>
-                    <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                </motion.div>
-                </motion.div>
-            </motion.div>
+                                {/* Image Counter */}
+                                <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
+                                    {currentIndex + 1} / {filteredImages.length}
+                                </div>
+
+                                {/* Navigation Buttons */}
+                                {filteredImages.length > 1 && (
+                                    <>
+                                        <motion.button
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePrevious();
+                                            }}
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+                                        >
+                                            <ChevronLeft size={24} />
+                                        </motion.button>
+                                        <motion.button
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleNext();
+                                            }}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+                                        >
+                                            <ChevronRight size={24} />
+                                        </motion.button>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Image Details */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-6 border-t border-accent/20"
+                            >
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
+                                        <p className="text-gray-400 mb-4">{selectedImage.description}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-4 items-center">
+                                    <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
+                                        {selectedImage.category}
+                                    </span>
+                                    <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
+                </Portal>
             )}
         </AnimatePresence>
         </section>

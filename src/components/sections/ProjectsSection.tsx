@@ -10,6 +10,7 @@ import { ProjectFilter } from './ProjectFilter';
 import { GitHubStats } from './GitHubStats';
 import { GiscusComments } from './GiscusComments';
 import { applyFilters, sortProjects } from '../../lib/utils/projectHelpers';
+import { Portal } from '../common/Portal';
 
 export const ProjectsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -23,14 +24,17 @@ export const ProjectsSection: React.FC = () => {
   const technologies = useMemo(() => getUniqueTechnologies(), []);
   const years = useMemo(() => getUniqueYears(), []);
 
-  // Auto-scroll to modal when project is selected
+  // Lock body scroll when modal opens
   useEffect(() => {
     if (expandedProject) {
-      const projectsSection = document.getElementById('projects');
-      if (projectsSection) {
-        projectsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [expandedProject]);
 
   // Apply filters and sort
@@ -161,16 +165,18 @@ export const ProjectsSection: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Project Detail Modal */}
+        {/* Project Detail Modal with Portal */}
         <AnimatePresence>
         {expandedProject && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setExpandedProject(null)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
+          <Portal>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setExpandedProject(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+              style={{ margin: 0 }}
+            >
             {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -326,6 +332,7 @@ export const ProjectsSection: React.FC = () => {
                 </div>
               </motion.div>
             </motion.div>
+            </Portal>
         )}
       </AnimatePresence>
       </section>

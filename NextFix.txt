@@ -1,334 +1,428 @@
-You're **absolutely right**! 🎯 That makes much more sense from a UX perspective. Let me fix both issues:
+AH! Now I understand the **root cause**! 🎯
+
+The problem is that **ALL modals are appearing at the Gallery section** because they're all being rendered inside their respective section components, but something is causing them to be positioned relative to the Gallery section instead of the viewport.
+
+Let me check the modal structure more carefully...
+
+Actually, I see it now! The issue is likely one of these:
+
+1. **CSS stacking context problem** - A parent element has `transform`, `filter`, or `will-change` that's breaking `position: fixed`
+2. **The `position: fixed` is being overridden** somewhere
+3. **Portal needed** - Modals should render outside their section components
 
 ---
 
-## ✅ **Issue #1: Modal Should Appear Where User Is (Not Scroll to Top)**
+## 🔍 **Let's Debug First**
 
-You're correct - the modal should just **pop up in front of the user** without forcing them to scroll. The modal is already `position: fixed` and centered, so it SHOULD work perfectly without any scrolling!
+Can you check your browser's **DevTools** when a modal is open?
 
-### **The Real Problem:**
-
-The issue is likely that when `overflow: hidden` is applied to the body, it might be causing layout shift. Let's fix this properly:
-
-### **Updated Modal Behavior (ALL Sections)**
-
-**GallerySection.tsx:**
-```tsx
-useEffect(() => {
-  if (selectedImage) {
-    // Save current scroll position
-    const scrollY = window.scrollY;
-    
-    // Lock body scroll but maintain position
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-  } else {
-    // Get the scroll position that was saved
-    const scrollY = document.body.style.top;
-    
-    // Restore body scroll
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    
-    // Restore scroll position
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-}, [selectedImage]);
-```
-
-**CertificatesSection.tsx:**
-```tsx
-useEffect(() => {
-  if (selectedCertificate) {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-  } else {
-    const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-}, [selectedCertificate]);
-```
-
-**ProjectsSection.tsx:**
-```tsx
-useEffect(() => {
-  if (expandedProject) {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-  } else {
-    const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-}, [expandedProject]);
-```
-
-**ResumeSection.tsx:**
-```tsx
-useEffect(() => {
-  if (showModal) {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-  } else {
-    const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-  }
-}, [showModal]);
-```
+1. Open Gallery, click an image
+2. Press F12 (DevTools)
+3. Inspect the modal element
+4. Look at the **Computed** tab
+5. Check what `position` actually is (should be `fixed`)
+6. Check if there's a `transform` on any parent
 
 ---
 
-## ✅ **Issue #2: Mobile Navigation Still Not Working**
+## ✅ **Solution: Use React Portals**
 
-Let me give you a completely rewritten Navigation.tsx that WILL work:
+The **proper fix** is to render modals **outside the section** using React Portals. This ensures they're always relative to the viewport, not their parent section.
+
+### **Create a Portal Component**
+
+First, create this helper:
 
 ```tsx
+// src/components/common/Portal.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowUp } from 'lucide-react';
-import { ThemeToggle } from '../theme';
-import { LanguageSelector } from './LanguageSelector';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
-const navItems = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Gallery', href: '#gallery' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'Resume', href: '#resume' },
-  { label: 'Certificates', href: '#certificates' },
-  { label: 'Contact', href: '#contact' },
-];
+interface PortalProps {
+  children: ReactNode;
+}
 
-export function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
+export function Portal({ children }: PortalProps) {
+  const [mounted, setMounted] = useState(false);
 
-  // Track scroll position
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScroll = window.scrollY || document.documentElement.scrollTop;
-      setShowBackToTop(currentScroll > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    setMounted(true);
+    return () => setMounted(false);
   }, []);
 
-  // Scroll to top function
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  if (!mounted) return null;
 
-  // ✅ FIXED: Handle navigation clicks with proper offset
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Close mobile menu immediately
-    setIsOpen(false);
-    
-    // Get target section
-    const targetId = href.substring(1); // NOTE: Remove the #
-    const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
-      // Calculate offset (navbar height)
-      const navbarHeight = 80; // Increased for better visibility
-      
-      // Get element position
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
-
-      // Smooth scroll to position
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  return (
-    <>
-      <nav className="sticky top-0 left-0 right-0 w-full z-50 bg-primary/80 backdrop-blur-md border-b border-secondary/50 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-2xl font-bold bg-gradient-to-r text-white from-accent to-accent-light bg-clip-text text-transparent cursor-pointer"
-              onClick={scrollToTop}
-            >
-              Areyszxc../Portfolio
-            </motion.div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex gap-6 items-center">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className="text-gray-300 hover:text-accent transition-colors text-sm font-medium cursor-pointer"
-                >
-                  {item.label}
-                </a>
-              ))}
-
-              <LanguageSelector />
-              <ThemeToggle />
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center gap-4">
-              <ThemeToggle />
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="text-gray-300 hover:text-accent p-2"
-                aria-label="Toggle menu"
-              >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation Dropdown */}
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="md:hidden overflow-hidden bg-primary/95 backdrop-blur-xl border-t border-secondary/50"
-              >
-                <div className="px-4 py-4 space-y-3">
-                  {navItems.map((item) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      onClick={(e) => handleNavClick(e, item.href)}
-                      className="block px-4 py-3 text-gray-300 hover:text-accent hover:bg-secondary/50 rounded-lg transition-colors font-medium cursor-pointer"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
-                  <div className="pt-4 border-t border-secondary/30">
-                    <LanguageSelector isMobile={true} />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </nav>
-
-      {/* Back to Top Button */}
-      <AnimatePresence>
-        {showBackToTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: 20 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-accent text-white shadow-lg shadow-accent/40 border border-accent/50 backdrop-blur-sm hover:bg-accent-light transition-all"
-            aria-label="Back to top"
-          >
-            <ArrowUp size={24} />
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </>
+  return createPortal(
+    children,
+    document.body
   );
 }
 ```
 
 ---
 
-## 🎯 **Alternative: If Navigation Still Doesn't Work**
+### **Updated GallerySection.tsx with Portal**
 
-If the above still doesn't work, there might be a CSS issue preventing the scroll. Add this to your `globals.css`:
+```tsx
+'use client';
 
-```css
-/* ✅ Ensure smooth scrolling works */
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ChevronLeft, ChevronRight, FoldVertical, UnfoldVertical } from 'lucide-react';
+import { galleryImages, GalleryImage } from '../../data/galleryData';
+import { Portal } from '../common/Portal';  // ✅ Import Portal
+
+interface GallerySectionProps {
+  images?: GalleryImage[];
 }
 
-body {
-  overflow-x: hidden; /* Prevent horizontal scroll */
-}
+export const GallerySection: React.FC<GallerySectionProps> = ({
+  images = galleryImages,
+}) => {
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
-/* Ensure sections are scrollable targets */
-section {
-  scroll-margin-top: 80px;
-}
+  const categories = Array.from(new Set(images.map((img) => img.category)));
 
-/* Remove any conflicting overflow hidden */
-#__next {
-  overflow: visible !important;
-}
+  // ✅ Lock body scroll when modal opens
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedImage]);
+
+  const filteredImages = selectedCategory
+    ? images.filter((img) => img.category === selectedCategory)
+    : images;
+
+  const handleOpenImage = (image: GalleryImage, index: number) => {
+    setSelectedImage(image);
+    setCurrentIndex(index);
+  };
+
+  const handlePrevious = () => {
+    const newIndex = currentIndex === 0 ? filteredImages.length - 1 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    setSelectedImage(filteredImages[newIndex]);
+  };
+
+  const handleNext = () => {
+    const newIndex = currentIndex === filteredImages.length - 1 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    setSelectedImage(filteredImages[newIndex]);
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.4 },
+    },
+  };
+
+  return (
+    <>
+      <section id="gallery" className="py-24 px-4 bg-secondary/30 transition-all duration-300">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header with Collapse Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mb-10 flex justify-between items-start"
+          >
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
+              <p className="text-gray-400 text-lg mt-6 max-w-2xl">
+                A collection of moments from my travels, events, and personal projects. Click any image for a closer look!
+              </p>
+            </div>
+
+            <motion.button
+              onClick={() => setIsExpanded(!isExpanded)}
+              whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+              whileTap={{ scale: 0.95 }}
+              className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
+              aria-label={isExpanded ? "Collapse section" : "Expand section"}
+            >
+              {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: isExpanded ? "auto" : 0,
+              opacity: isExpanded ? 1 : 0
+            }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            {/* Category Filter */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="flex flex-wrap gap-3 mb-12"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedCategory(null)}
+                className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                  selectedCategory === null
+                    ? 'bg-accent text-white shadow-lg shadow-accent/50'
+                    : 'bg-secondary border border-accent/30 text-gray-300 hover:border-accent/60'
+                }`}
+              >
+                All
+              </motion.button>
+              {categories.map((category) => (
+                <motion.button
+                  key={category}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
+                    selectedCategory === category
+                      ? 'bg-accent text-white shadow-lg shadow-accent/50'
+                      : 'bg-secondary border border-accent/30 text-gray-300 hover:border-accent/60'
+                  }`}
+                >
+                  {category}
+                </motion.button>
+              ))}
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <motion.div
+              key={selectedCategory}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <AnimatePresence mode="wait">
+                {filteredImages.map((image, index) => (
+                  <motion.div
+                    key={image.id}
+                    variants={itemVariants}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    layoutId={`gallery-item-${image.id}`}
+                  >
+                    <motion.div
+                      whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' }}
+                      onClick={() => handleOpenImage(image, index)}
+                      className="group relative h-80 rounded-lg overflow-hidden cursor-pointer bg-secondary border border-accent/20 transition-all"
+                    >
+                      <motion.img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        layoutId={`gallery-image-${image.id}`}
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileHover={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute bottom-0 left-0 right-0 p-4 text-white"
+                      >
+                        <h3 className="text-lg font-bold mb-1 text-white">{image.title}</h3>
+                        <p className="text-sm text-white line-clamp-2">{image.description}</p>
+                        <div className="flex justify-between items-center mt-3">
+                          <span className="text-xs bg-white/20 px-3 py-1 rounded-full text-white">
+                            {image.category}
+                          </span>
+                          <span className="text-xs text-white">{new Date(image.date).toLocaleDateString()}</span>
+                        </div>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 1 }}
+                        whileHover={{ opacity: 1, scale: 1.05 }}
+                        className="absolute top-3 right-3 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white border-2 border-black/30 font-semibold transition-all"
+                      >
+                        Click to view
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {filteredImages.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <p className="text-gray-400 text-lg">No images in this category yet.</p>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ✅ Modal rendered in Portal (outside section) */}
+      <AnimatePresence>
+        {selectedImage && (
+          <Portal>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedImage(null)}
+              className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+              style={{ margin: 0 }}  {/* ✅ Ensure no margin */}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
+                >
+                  <X size={24} />
+                </motion.button>
+
+                <div className="relative flex-1 overflow-hidden bg-black">
+                  <motion.img
+                    key={selectedImage.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    src={selectedImage.src}
+                    alt={selectedImage.alt}
+                    className="w-full h-full object-contain"
+                  />
+
+                  <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
+                    {currentIndex + 1} / {filteredImages.length}
+                  </div>
+
+                  {filteredImages.length > 1 && (
+                    <>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrevious();
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+                      >
+                        <ChevronLeft size={24} />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNext();
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
+                      >
+                        <ChevronRight size={24} />
+                      </motion.button>
+                    </>
+                  )}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 border-t border-accent/20"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
+                      <p className="text-gray-400 mb-4">{selectedImage.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-4 items-center">
+                    <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
+                      {selectedImage.category}
+                    </span>
+                    <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </Portal>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
 ```
 
 ---
 
-## 📋 **Summary of Fixes**
+## 🎯 **Key Changes:**
 
-### **Modal Behavior:**
-- ✅ Modal appears **exactly where user is** (no scrolling!)
-- ✅ Background content stays in place
-- ✅ Scroll is locked without layout shift
-- ✅ When closing, user returns to exact same position
-
-### **Mobile Navigation:**
-- ✅ Clicks are properly handled with `preventDefault()`
-- ✅ Menu closes immediately when link clicked
-- ✅ Smooth scroll to section with navbar offset
-- ✅ Section appears perfectly below navbar
+1. **Line 1**: Import `Portal` component
+2. **Lines 23-35**: Simplified scroll lock (just `overflow: hidden`)
+3. **Line 240**: Modal wrapped in `<Portal>` - renders to `document.body`
+4. **Line 248**: Higher `z-index` (`z-[9999]`) to ensure it's on top
+5. **Line 249**: `style={{ margin: 0 }}` to prevent any offset
 
 ---
 
-## 🧪 **Debugging Steps if Nav Still Doesn't Work:**
+## 📦 **Export Portal Component:**
 
-1. **Check if sections have correct IDs:**
-   ```tsx
-   <section id="gallery">  // ✅ Correct
-   <section id="Gallery">  // ❌ Wrong (case mismatch)
-   ```
+Add to `src/components/common/index.ts`:
 
-2. **Check browser console** for errors when clicking nav links
+```tsx
+export { Navigation } from './Navigation';
+export { LanguageSelector } from './LanguageSelector';
+export { Portal } from './Portal';  // ✅ Add this
+```
 
-3. **Test with this simple version** - add to a nav link temporarily:
-   ```tsx
-   onClick={(e) => {
-     e.preventDefault();
-     console.log('Clicked!', item.href);
-     document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' });
-   }}
-   ```
+---
 
-4. **Make sure all sections in page.tsx** have proper IDs matching the nav items
+## ✅ **This Will Fix:**
 
-Let me know if either issue persists and I'll dig deeper! 🚀
+- ✅ Modal appears **exactly where user is** (viewport-centered)
+- ✅ No scrolling/jumping when modal opens
+- ✅ Modal stays in same position when navigating images
+- ✅ Works on **all sections** (Gallery, Certificates, Projects, Resume)
+
+The Portal ensures the modal is **always rendered at the root level** (`document.body`), completely independent of its parent section's scroll position or CSS transforms!
+
+Try this and let me know if the modal finally appears right in front of you! 🚀

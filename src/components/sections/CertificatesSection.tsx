@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, ChevronLeft, ChevronRight, FoldVertical, UnfoldVertical } from 'lucide-react';
 import { certificatesData, Certificate, getUniqueCertificateCategories } from '../../data/certificatesData';
+import { Portal } from '../common/Portal';
 
 export const CertificatesSection: React.FC = () => {
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
@@ -13,14 +14,17 @@ export const CertificatesSection: React.FC = () => {
   const categories = useMemo(() => getUniqueCertificateCategories(), []);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-scroll to modal when certificate is selected
+  // Lock body scroll when modal opens
   useEffect(() => {
     if (selectedCertificate) {
-      const certificatesSection = document.getElementById('certificates');
-      if (certificatesSection) {
-        certificatesSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [selectedCertificate]);
 
   const filteredCertificates = useMemo(() => {
@@ -233,16 +237,18 @@ export const CertificatesSection: React.FC = () => {
           </motion.div>
         </div>
 
-      {/* Certificate Detail Modal */}
+      {/* Certificate Detail Modal with Portal */}
       <AnimatePresence>
         {selectedCertificate && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedCertificate(null)}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
+          <Portal>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedCertificate(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+              style={{ margin: 0 }}
+            >
             {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -361,7 +367,8 @@ export const CertificatesSection: React.FC = () => {
                 )}
               </div>
             </motion.div>
-          </motion.div>
+            </motion.div>
+          </Portal>
         )}
       </AnimatePresence>
     </section>

@@ -4,6 +4,7 @@
     import { motion, AnimatePresence } from 'framer-motion';
     import { Download, Printer, ChevronDown, X, FileText, Clipboard, Eye, User, Briefcase, GraduationCap, Trophy, Globe, Star, Check, FoldVertical, UnfoldVertical } from 'lucide-react';
     import { resumeData, Experience, Education, Certification, Language, Award } from '../../data/resumeData';
+    import { Portal } from '../common/Portal';
 
     type TabType = 'resume' | 'cv';
 
@@ -14,14 +15,16 @@
     const [expandedAward, setExpandedAward] = useState<number | null>(null);
     const [isExpanded, setIsExpanded] = useState(true);
 
-    // Auto-scroll to modal when opened
+    // Manage body scroll lock for modal
     useEffect(() => {
         if (showModal) {
-            const resumeSection = document.getElementById('resume');
-            if (resumeSection) {
-                resumeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [showModal]);
 
     const containerVariants = {
@@ -536,42 +539,45 @@
         {/* Resume/CV View Modal */}
         <AnimatePresence>
             {showModal && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setShowModal(false)}
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                >
-                    {/* Modal */}
+                <Portal>
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="relative bg-primary rounded-lg shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowModal(false)}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+                        style={{ margin: 0 }}
                     >
-                        {/* Close Button */}
-                        <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setShowModal(false)}
-                            className="absolute top-4 right-4 p-2 hover:bg-secondary/50 rounded-full transition-colors light-mode:hover:bg-gray-100 terminal-mode:hover:bg-emerald-900 z-10 border-2 border-black/30 bg-black/20 backdrop-blur-sm"
+                        {/* Modal */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative bg-primary rounded-lg shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
                         >
-                            <X size={24} className="text-foreground" />
-                        </motion.button>
+                            {/* Close Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setShowModal(false)}
+                                className="absolute top-4 right-4 p-2 hover:bg-secondary/50 rounded-full transition-colors light-mode:hover:bg-gray-100 terminal-mode:hover:bg-emerald-900 z-10 border-2 border-black/30 bg-black/20 backdrop-blur-sm"
+                            >
+                                <X size={24} className="text-foreground" />
+                            </motion.button>
 
-                        {/* PDF Viewer */}
-                        <div className="flex-1 overflow-auto bg-gray-900 w-full">
-                            <iframe
-                                src={activeTab === 'resume' ? resumeData.resumePdfUrl : resumeData.cvPdfUrl}
-                                className="w-full h-full border-none"
-                                title={activeTab === 'resume' ? 'Resume' : 'CV'}
-                            />
-                        </div>
+                            {/* PDF Viewer */}
+                            <div className="flex-1 overflow-auto bg-gray-900 w-full">
+                                <iframe
+                                    src={activeTab === 'resume' ? resumeData.resumePdfUrl : resumeData.cvPdfUrl}
+                                    className="w-full h-full border-none"
+                                    title={activeTab === 'resume' ? 'Resume' : 'CV'}
+                                />
+                            </div>
+                        </motion.div>
                     </motion.div>
-                </motion.div>
+                </Portal>
             )}
         </AnimatePresence>
         </section>
