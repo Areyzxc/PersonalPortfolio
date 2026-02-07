@@ -234,14 +234,16 @@
         <AnimatePresence>
             {selectedImage && (
                 <Portal>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                    {/* ✅ FIXED: Outer overlay is plain div (no motion.div, no transforms) */}
+                    <div
                         onClick={() => setSelectedImage(null)}
-                        className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-                        style={{ margin: 0 }}
+                        className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+                        style={{ 
+                            zIndex: 99999,
+                            margin: 0
+                        }}
                     >
+                        {/* ✅ Inner content has animations (scale, etc) inside fixed container */}
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -327,7 +329,7 @@
                                 </div>
                             </motion.div>
                         </motion.div>
-                    </motion.div>
+                    </div>
                 </Portal>
             )}
         </AnimatePresence>

@@ -540,15 +540,16 @@
         <AnimatePresence>
             {showModal && (
                 <Portal>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                    {/* ✅ FIXED: Outer overlay is plain div (no motion.div, no transforms) */}
+                    <div
                         onClick={() => setShowModal(false)}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-                        style={{ margin: 0 }}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                        style={{ 
+                            zIndex: 99999,
+                            margin: 0 
+                        }}
                     >
-                        {/* Modal */}
+                        {/* ✅ Inner content has animations inside fixed container */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -576,7 +577,7 @@
                                 />
                             </div>
                         </motion.div>
-                    </motion.div>
+                    </div>
                 </Portal>
             )}
         </AnimatePresence>

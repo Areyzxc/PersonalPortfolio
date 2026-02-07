@@ -1,428 +1,174 @@
-AH! Now I understand the **root cause**! 🎯
+Looking at the HTML structure, I can see:
 
-The problem is that **ALL modals are appearing at the Gallery section** because they're all being rendered inside their respective section components, but something is causing them to be positioned relative to the Gallery section instead of the viewport.
+HTML
+<div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" style="margin: 0px; opacity: 1;">
+The modal has:
 
-Let me check the modal structure more carefully...
+✅ position: fixed
+✅ inset-0
+✅ High z-index z-[9999]
+But I notice something critical - look at the parent elements:
 
-Actually, I see it now! The issue is likely one of these:
+HTML
+<div class="relative bg-primary rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950" style="opacity: 1; transform: none;">
+There's a transform: none; on the inner modal container! This is coming from Framer Motion.
 
-1. **CSS stacking context problem** - A parent element has `transform`, `filter`, or `will-change` that's breaking `position: fixed`
-2. **The `position: fixed` is being overridden** somewhere
-3. **Portal needed** - Modals should render outside their section components
+Also, I can see in the Computed styles on the right:
 
----
+border-bottom-color, border-image-outset, etc. - all these computed styles
+The problem is that Framer Motion's animations are adding transform properties which are breaking the fixed positioning!
 
-## 🔍 **Let's Debug First**
+✅ The Real Fix
+The issue is that Framer Motion's motion.div is applying transforms during animation, which creates a new containing block.
 
-Can you check your browser's **DevTools** when a modal is open?
+Here's the solution - we need to separate the Portal wrapper from the animated content:
 
-1. Open Gallery, click an image
-2. Press F12 (DevTools)
-3. Inspect the modal element
-4. Look at the **Computed** tab
-5. Check what `position` actually is (should be `fixed`)
-6. Check if there's a `transform` on any parent
+Updated GallerySection.tsx (Modal Part Only)
+Replace your modal code with this:
 
----
+TSX
+{/* ✅ FIXED: Modal in Portal with proper animation separation */}
+{selectedImage && (
+  <Portal>
+    {/* Overlay - no transform animations */}
+    <div
+      onClick={() => setSelectedImage(null)}
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+      style={{ 
+        zIndex: 99999,
+        margin: 0,
+        animation: 'fadeIn 0.2s ease-out'
+      }}
+    >
+      {/* Content - animations happen here, INSIDE the fixed container */}
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
+      >
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setSelectedImage(null)}
+          className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
+        >
+          <X size={24} />
+        </motion.button>
 
-## ✅ **Solution: Use React Portals**
+        <div className="relative flex-1 overflow-hidden bg-black">
+          <motion.img
+            key={selectedImage.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            src={selectedImage.src}
+            alt={selectedImage.alt}
+            className="w-full h-full object-contain"
+          />
 
-The **proper fix** is to render modals **outside the section** using React Portals. This ensures they're always relative to the viewport, not their parent section.
+          <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
+            {currentIndex + 1} / {filteredImages.length}
+          </div>
 
-### **Create a Portal Component**
-
-First, create this helper:
-
-```tsx
-// src/components/common/Portal.tsx
-'use client';
-
-import { useEffect, useState, ReactNode } from 'react';
-import { createPortal } from 'react-dom';
-
-interface PortalProps {
-  children: ReactNode;
-}
-
-export function Portal({ children }: PortalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
-  if (!mounted) return null;
-
-  return createPortal(
-    children,
-    document.body
-  );
-}
-```
-
----
-
-### **Updated GallerySection.tsx with Portal**
-
-```tsx
-'use client';
-
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, FoldVertical, UnfoldVertical } from 'lucide-react';
-import { galleryImages, GalleryImage } from '../../data/galleryData';
-import { Portal } from '../common/Portal';  // ✅ Import Portal
-
-interface GallerySectionProps {
-  images?: GalleryImage[];
-}
-
-export const GallerySection: React.FC<GallerySectionProps> = ({
-  images = galleryImages,
-}) => {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(true);
-
-  const categories = Array.from(new Set(images.map((img) => img.category)));
-
-  // ✅ Lock body scroll when modal opens
-  useEffect(() => {
-    if (selectedImage) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [selectedImage]);
-
-  const filteredImages = selectedCategory
-    ? images.filter((img) => img.category === selectedCategory)
-    : images;
-
-  const handleOpenImage = (image: GalleryImage, index: number) => {
-    setSelectedImage(image);
-    setCurrentIndex(index);
-  };
-
-  const handlePrevious = () => {
-    const newIndex = currentIndex === 0 ? filteredImages.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-    setSelectedImage(filteredImages[newIndex]);
-  };
-
-  const handleNext = () => {
-    const newIndex = currentIndex === filteredImages.length - 1 ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-    setSelectedImage(filteredImages[newIndex]);
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4 },
-    },
-  };
-
-  return (
-    <>
-      <section id="gallery" className="py-24 px-4 bg-secondary/30 transition-all duration-300">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header with Collapse Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-10 flex justify-between items-start"
-          >
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-accent to-accent-light rounded-full"></div>
-              <p className="text-gray-400 text-lg mt-6 max-w-2xl">
-                A collection of moments from my travels, events, and personal projects. Click any image for a closer look!
-              </p>
-            </div>
-
-            <motion.button
-              onClick={() => setIsExpanded(!isExpanded)}
-              whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-              whileTap={{ scale: 0.95 }}
-              className="p-3 rounded-full border border-accent/30 text-accent hover:border-accent transition-all"
-              aria-label={isExpanded ? "Collapse section" : "Expand section"}
-            >
-              {isExpanded ? <FoldVertical size={24} /> : <UnfoldVertical size={24} />}
-            </motion.button>
-          </motion.div>
-
-          <motion.div
-            initial={false}
-            animate={{ 
-              height: isExpanded ? "auto" : 0,
-              opacity: isExpanded ? 1 : 0
-            }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
-          >
-            {/* Category Filter */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="flex flex-wrap gap-3 mb-12"
-            >
+          {filteredImages.length > 1 && (
+            <>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory(null)}
-                className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                  selectedCategory === null
-                    ? 'bg-accent text-white shadow-lg shadow-accent/50'
-                    : 'bg-secondary border border-accent/30 text-gray-300 hover:border-accent/60'
-                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrevious();
+                }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
               >
-                All
+                <ChevronLeft size={24} />
               </motion.button>
-              {categories.map((category) => (
-                <motion.button
-                  key={category}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                    selectedCategory === category
-                      ? 'bg-accent text-white shadow-lg shadow-accent/50'
-                      : 'bg-secondary border border-accent/30 text-gray-300 hover:border-accent/60'
-                  }`}
-                >
-                  {category}
-                </motion.button>
-              ))}
-            </motion.div>
-
-            {/* Gallery Grid */}
-            <motion.div
-              key={selectedCategory}
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <AnimatePresence mode="wait">
-                {filteredImages.map((image, index) => (
-                  <motion.div
-                    key={image.id}
-                    variants={itemVariants}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    layoutId={`gallery-item-${image.id}`}
-                  >
-                    <motion.div
-                      whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' }}
-                      onClick={() => handleOpenImage(image, index)}
-                      className="group relative h-80 rounded-lg overflow-hidden cursor-pointer bg-secondary border border-accent/20 transition-all"
-                    >
-                      <motion.img
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        layoutId={`gallery-image-${image.id}`}
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileHover={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute bottom-0 left-0 right-0 p-4 text-white"
-                      >
-                        <h3 className="text-lg font-bold mb-1 text-white">{image.title}</h3>
-                        <p className="text-sm text-white line-clamp-2">{image.description}</p>
-                        <div className="flex justify-between items-center mt-3">
-                          <span className="text-xs bg-white/20 px-3 py-1 rounded-full text-white">
-                            {image.category}
-                          </span>
-                          <span className="text-xs text-white">{new Date(image.date).toLocaleDateString()}</span>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        initial={{ opacity: 1 }}
-                        whileHover={{ opacity: 1, scale: 1.05 }}
-                        className="absolute top-3 right-3 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white border-2 border-black/30 font-semibold transition-all"
-                      >
-                        Click to view
-                      </motion.div>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-
-            {filteredImages.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
               >
-                <p className="text-gray-400 text-lg">No images in this category yet.</p>
-              </motion.div>
-            )}
-          </motion.div>
+                <ChevronRight size={24} />
+              </motion.button>
+            </>
+          )}
         </div>
-      </section>
 
-      {/* ✅ Modal rendered in Portal (outside section) */}
-      <AnimatePresence>
-        {selectedImage && (
-          <Portal>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedImage(null)}
-              className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-              style={{ margin: 0 }}  {/* ✅ Ensure no margin */}
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                onClick={(e) => e.stopPropagation()}
-                className="relative max-w-4xl w-full max-h-[90vh] flex flex-col rounded-lg overflow-hidden bg-secondary border border-accent/20"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setSelectedImage(null)}
-                  className="absolute top-4 right-4 z-10 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-all backdrop-blur-sm border-2 border-black/30"
-                >
-                  <X size={24} />
-                </motion.button>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-6 border-t border-accent/20"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
+              <p className="text-gray-400 mb-4">{selectedImage.description}</p>
+            </div>
+          </div>
 
-                <div className="relative flex-1 overflow-hidden bg-black">
-                  <motion.img
-                    key={selectedImage.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
-                    className="w-full h-full object-contain"
-                  />
+          <div className="flex flex-wrap gap-4 items-center">
+            <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
+              {selectedImage.category}
+            </span>
+            <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          </div>
+        </motion.div>
+      </motion.div>
+    </div>
+  </Portal>
+)}
+Add CSS Animation
+Add this to your globals.css:
 
-                  <div className="absolute bottom-4 left-4 bg-black/50 px-4 py-2 rounded-full text-white text-sm backdrop-blur-sm">
-                    {currentIndex + 1} / {filteredImages.length}
-                  </div>
+CSS
+/* app/globals.css */
 
-                  {filteredImages.length > 1 && (
-                    <>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePrevious();
-                        }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
-                      >
-                        <ChevronLeft size={24} />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleNext();
-                        }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 rounded-full transition-all backdrop-blur-sm z-20 border-2 border-black/30"
-                      >
-                        <ChevronRight size={24} />
-                      </motion.button>
-                    </>
-                  )}
-                </div>
+/* ... existing styles ... */
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-6 border-t border-accent/20"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
-                      <p className="text-gray-400 mb-4">{selectedImage.description}</p>
-                    </div>
-                  </div>
+/* ✅ Add this at the bottom */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+🎯 Key Changes:
+Outer div is plain HTML (not motion.div) - This keeps position: fixed working
+Inner motion.div handles animations - Transforms happen INSIDE the fixed container
+Removed AnimatePresence from wrapping the overlay - AnimatePresence can add extra wrappers
+Simple CSS animation for fade-in instead of Framer Motion on the overlay
+📋 Alternative: Use AnimatePresence Correctly
+If you want to keep AnimatePresence for exit animations, wrap it around the Portal content, not the Portal itself:
 
-                  <div className="flex flex-wrap gap-4 items-center">
-                    <span className="inline-block bg-accent/20 px-4 py-2 rounded-full text-accent-light font-semibold">
-                      {selectedImage.category}
-                    </span>
-                    <span className="text-gray-500">{new Date(selectedImage.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </Portal>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-```
-
----
-
-## 🎯 **Key Changes:**
-
-1. **Line 1**: Import `Portal` component
-2. **Lines 23-35**: Simplified scroll lock (just `overflow: hidden`)
-3. **Line 240**: Modal wrapped in `<Portal>` - renders to `document.body`
-4. **Line 248**: Higher `z-index` (`z-[9999]`) to ensure it's on top
-5. **Line 249**: `style={{ margin: 0 }}` to prevent any offset
-
----
-
-## 📦 **Export Portal Component:**
-
-Add to `src/components/common/index.ts`:
-
-```tsx
-export { Navigation } from './Navigation';
-export { LanguageSelector } from './LanguageSelector';
-export { Portal } from './Portal';  // ✅ Add this
-```
-
----
-
-## ✅ **This Will Fix:**
-
-- ✅ Modal appears **exactly where user is** (viewport-centered)
-- ✅ No scrolling/jumping when modal opens
-- ✅ Modal stays in same position when navigating images
-- ✅ Works on **all sections** (Gallery, Certificates, Projects, Resume)
-
-The Portal ensures the modal is **always rendered at the root level** (`document.body`), completely independent of its parent section's scroll position or CSS transforms!
-
-Try this and let me know if the modal finally appears right in front of you! 🚀
+TSX
+<Portal>
+  <AnimatePresence>
+    {selectedImage && (
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          // ... rest of modal
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+</Portal>
+🧪 Test This:
+Apply the changes
+Hard refresh (Ctrl+Shift+R)
+Scroll to Certificates section (bottom)
+Click a certificate
+Modal should appear RIGHT IN FRONT OF YOU at the bottom
+Open DevTools and check - the fixed div should NOT have any transform property
+This should finally work! The key is keeping the fixed element free from any transform properties, even from Framer Motion! 🚀

@@ -169,23 +169,24 @@ export const ProjectsSection: React.FC = () => {
         <AnimatePresence>
         {expandedProject && (
           <Portal>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            {/* ✅ FIXED: Outer overlay is plain div (no motion.div, no transforms) */}
+            <div
               onClick={() => setExpandedProject(null)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-              style={{ margin: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+              style={{ 
+                zIndex: 99999,
+                margin: 0 
+              }}
             >
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative bg-primary rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
-            >
+              {/* ✅ Inner content has animations inside fixed container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative bg-primary rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col light-mode:bg-white terminal-mode:bg-emerald-950"
+              >
               {/* Close Button */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -331,8 +332,8 @@ export const ProjectsSection: React.FC = () => {
                   )}
                 </div>
               </motion.div>
-            </motion.div>
-            </Portal>
+            </div>
+          </Portal>
         )}
       </AnimatePresence>
       </section>
