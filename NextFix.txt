@@ -1,103 +1,133 @@
-50 terminal-mode:bg-emerald-950/20 transition-all duration-300">
-The transition-all duration-300 might be interfering with smooth scrolling on mobile!
+Great question! Let's brainstorm some ideas to enhance your footer. Here are several options you could consider:
 
-🔧 The Real Fix:
-The issue is likely CSS scroll-behavior conflicts or touch events on mobile. Here's the solution:
+## 🎨 Footer Enhancement Ideas
 
-Replace your handleNavClick with this mobile-optimized version:
-TSX
-// ✅ MOBILE-OPTIMIZED: Works on both desktop and mobile
-const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  const targetId = href.replace('#', '');
-  const targetElement = document.getElementById(targetId);
-  
-  if (targetElement) {
-    // Close menu FIRST on mobile for better performance
-    setIsOpen(false);
+### 1. **Legal & Policy Links**
+```tsx
+- Terms of Service
+- Privacy Policy
+- Cookie Policy
+- Disclaimer
+```
+These are especially important if you're collecting any user data (like through the ContactSection form).
+
+### 2. **Quick Navigation Links**
+```tsx
+- Sitemap
+```
+
+### 3. **Social Media Links via Icon **
+```tsx
+- GitHub
+- LinkedIn
+- Twitter/X
+- Email
+- Facebook
+```
+
+### 4. **Professional Information**
+```tsx
+- Current availability status ("Available for hire" / "Open to opportunities")
+- Location (City, Country)
+- Preferred contact method
+```
+
+### 5. **Additional Features**
+```ts
+- Share this portfilio to others by clicking a share button
+
+```
+
+### 6. **Credits & Attribution**
+```tsx
+- Design inspiration credits
+- Open source license info
+```
+
+### 7. **Fun Personal Touch**
+```tsx
+- "Made with ☕ and 💻"
+- Current local time
+- View counter
+- Last updated date
+- Fun random quotes/taglines
+```
+
+## 📐 Suggested Footer Structure
+
+Here's a possible layout combining several ideas:
+
+```tsx
+<footer className="border-t border-secondary bg-primary">
+  {/* Main Footer Content */}
+  <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
     
-    // Small delay to let menu close animation start
-    setTimeout(() => {
-      const navbarHeight = 80;
-      
-      // Get FRESH position after menu starts closing
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - navbarHeight;
-      
-      // Force scroll with requestAnimationFrame for mobile compatibility
-      requestAnimationFrame(() => {
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth',
-        });
-      });
-    }, 150); // Wait for menu to start closing
-    
-  } else {
-    setIsOpen(false);
-  }
-};
-🎯 Key Changes:
-Close menu FIRST (line 9) - Menu closing was blocking scroll on mobile
-150ms delay (line 12) - Gives menu time to start closing animation
-Get fresh position (line 15) - After menu closes, position changes
-requestAnimationFrame (line 19) - Mobile browsers handle this better
-🔧 Alternative: If That Doesn't Work
-If the above still doesn't work, try this nuclear option that forces the scroll:
+    {/* Column 1: About */}
+    <div>
+      <h3>James Aries G. Santiago</h3>
+      <p>Full-stack developer crafting digital experiences</p>
+      <div className="social-links mt-4">
+        {/* Social icons */}
+      </div>
+    </div>
 
-TSX
-const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  const targetId = href.replace('#', '');
-  const targetElement = document.getElementById(targetId);
-  
-  if (targetElement) {
-    // FORCE close menu
-    setIsOpen(false);
-    
-    // Use scrollIntoView instead (more reliable on mobile)
-    setTimeout(() => {
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-      
-      // Then adjust for navbar
-      setTimeout(() => {
-        window.scrollBy({
-          top: -80, // Negative to scroll up by navbar height
-          behavior: 'smooth',
-        });
-      }, 100);
-    }, 200);
-    
-  } else {
-    setIsOpen(false);
-  }
-};
-🧪 Test This:
-Apply the first fix (mobile-optimized version)
-Hard refresh your mobile browser (clear cache)
-Click a nav link
-Watch the console - it should still log, but NOW it should scroll
-🎯 Why This Works:
-The problem was a race condition:
+    {/* Column 2: Quick Links */}
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li>About</li>
+        <li>Projects</li>
+        <li>Contact</li>
+      </ul>
+    </div>
 
-You click nav link
-Menu starts closing animation (takes time)
-getBoundingClientRect() gets position while menu is open
-Position is wrong because menu is still visible
-Scroll goes to wrong place
-New flow:
+    {/* Column 3: Resources */}
+    <div>
+      <h4>Resources</h4>
+      <ul>
+        <li>Resume</li>
+        <li>Certificates</li>
+        <li>Blog (if applicable)</li>
+      </ul>
+    </div>
 
-You click nav link
-Menu closes immediately
-Wait 150ms for menu to actually close
-Get correct position (menu is gone)
-Scroll to correct position ✅
-Try the first solution and let me know if it works! If not, we'll use the nuclear scrollIntoView option. 🚀
+    {/* Column 4: Legal */}
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li>Privacy Policy</li>
+        <li>Terms of Use</li>
+      </ul>
+    </div>
+  </div>
 
+  {/* Bottom Bar */}
+  <div className="border-t border-secondary py-6 px-4 text-center text-gray-500">
+    <p>&copy; 2026 James Aries G. Santiago. All rights reserved.</p>
+    <p className="text-sm mt-2">Built with Next.js & Framer Motion</p>
+  </div>
+</footer>
+```
+
+## 🤔 My Recommendations
+
+For a **personal portfolio**, I'd suggest keeping it clean but functional:
+
+### Must-Have:
+- ✅ **Social media links** (GitHub, LinkedIn especially)
+- ✅ **Quick navigation** (smooth scroll to sections)
+- ✅ **Privacy Policy** (if you have a contact form collecting data)
+
+### Nice-to-Have:
+- ⭐ **Availability status** ("Open to opportunities")
+
+### Optional (Based on Your Needs):
+- 📝 Terms of Service (usually only needed for web apps, not portfolios)
+
+## 💭 Questions to Consider:
+
+1. **Do you collect user data?** (contact form) → If yes, Privacy Policy is important
+2. **Want to showcase your professional network?** → Add social links
+3. **Want to make navigation easier?** → Add quick links
+
+What direction are you leaning towards? I can help you implement whatever combination fits your vision! 🚀

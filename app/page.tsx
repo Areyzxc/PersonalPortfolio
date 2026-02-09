@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { HeroSection, AboutSection, TechStackMarquee } from '@/src/components/sections';
+import { HeroSection, AboutSection, TechStackMarquee, FooterSection } from '@/src/components/sections';
 
 // Lazy load sections that are below the fold
 const SkillsSection = dynamic(() => import('@/src/components/sections').then(mod => ({ default: mod.SkillsSection })), {
@@ -71,10 +71,8 @@ export default function Home() {
       {/* Tech Stack Marquee - Infinite scrolling showcase of technologies */}
       <TechStackMarquee />
 
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-secondary text-center text-gray-500">
-        <p>&copy; 2026 | James Aries G. Santiago. All rights reserved.</p>
-      </footer>
+      {/* Enhanced Footer with Social Links, Quick Nav, and Legal Info */}
+      <FooterSection />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
     import { useState, useEffect } from 'react';
     import { motion } from 'framer-motion';
-    import { Mail, Phone, MapPin, Github, Linkedin, Twitter, Send, Facebook, Instagram, FoldVertical, UnfoldVertical } from 'lucide-react';
+    import { Mail, Phone, MapPin, Send, FoldVertical, UnfoldVertical } from 'lucide-react';
     import emailjs from '@emailjs/browser';
     import { BsTwitterX } from "react-icons/bs";
     import { FaGithub, FaSquareThreads } from "react-icons/fa6";

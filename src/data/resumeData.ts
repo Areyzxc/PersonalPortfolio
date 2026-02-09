@@ -88,7 +88,7 @@ export const resumeData: Resume = {
     },
     // ENTRY 2: Your Estate Job (Shows Work Ethic & Logistics)
     {
-      company: 'PGA Private Management',
+      company: 'Philglobal Asia Industrial Corporation',
       position: 'Estate Logistics & Caretaker',
       period: 'June 2023 - July 2023',
       description:
