@@ -258,5 +258,5 @@ export const resumeData: Resume = {
   ],
 
   resumePdfUrl: '/files/James_Aries_Santiago_Resume.pdf', // UPDATE HERE: Add your Resume PDF file path
-  cvPdfUrl: '/files/James_Aries_Santiago_CV.pdf', // UPDATE HERE: Add your CV PDF file path
+  cvPdfUrl: '/files/Santiago_JamesAries_ITSupportIntern_Resume.pdf', // UPDATE HERE: Add your CV PDF file path
 };
