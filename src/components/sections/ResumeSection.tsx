@@ -55,7 +55,7 @@
         const link = document.createElement('a');
         const isResume = activeTab === 'resume';
         link.href = isResume ? resumeData.resumePdfUrl : resumeData.cvPdfUrl;
-        link.download = isResume ? 'James_Aries_Santiago_Resume.pdf' : 'James_Aries_Santiago_CV.pdf';
+        link.download = isResume ? 'James_Aries_Santiago_Resume.pdf' : 'Santiago_JamesAries_ITSupportIntern_Resume.pdf';
         link.click();
     };
 
